@@ -5,7 +5,7 @@ Created on Mon Apr  3 11:13:54 2017
 @author: Johan
 """
 
-from tkinter import*
+from tkinter import *
 
 root = Tk()
 #Size of window
@@ -18,7 +18,7 @@ Tops = Frame(root, width = 1000,height = 100, bg ="powder blue", relief=SUNKEN)
 Tops.pack(side=TOP)
 
 #Label in top frame
-lblName = Label(Tops, font =('arial', 30,'bold'), text = "CrazyFlie controll system", fg = "Steel blue", bd = 10, anchor = 'w')
+lblName = Label(Tops, font =('arial', 30,'bold'), text = "CrazyFlie control system", fg = "Steel blue", bd = 10, anchor = 'w')
 lblName.grid(row=0,column=0) 
 
 #Upper left frame for parameters and reference values
