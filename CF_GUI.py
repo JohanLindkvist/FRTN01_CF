@@ -80,9 +80,11 @@ pos_ref_Lbl.grid(row=0,column=0)
 pos_ref_Entry = Entry(paramFrame, font=('arial', 10,'bold'), textvariable = pos_ref, bd=10,insertwidth=2, bg="powder blue", justify = 'right')
 pos_ref_Entry.grid(row=0,column=1)
 
-#Define method for apply button
+#Define method for apply button (Not real method)
 def btnApply():
-    pos_ref.set("x,y,z")
+    global test
+    test = PDx_K.get()
+    pos_ref.set(test)
 # Apply changes from input above
 Apply = Button(paramFrame, padx=8,pady=8,bd=6,fg="black", font=('arial', 10,'bold'),text = "Apply", bg="powder blue",command =btnApply).grid(row=7, column = 1)
 
