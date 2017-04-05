@@ -6,6 +6,7 @@ Created on Mon Apr  3 11:13:54 2017
 """
 
 from tkinter import*
+import tkinter.messagebox
 
 root = Tk()
 #Size of window
@@ -14,7 +15,7 @@ root.geometry("1000x600+0+0")
 root.title("CrazyFlie control system")
 
 #Top frame
-Tops = Frame(root, width = 1000,height = 100, bg ="powder blue", relief=SUNKEN)
+Tops = Frame(root, width = 1000,height = 40, bg ="powder blue", relief=SUNKEN)
 Tops.pack(side=TOP)
 
 #Label in top frame
@@ -22,21 +23,41 @@ lblName = Label(Tops, font =('arial', 30,'bold'), text = "CrazyFlie controll sys
 lblName.grid(row=0,column=0) 
 
 #Upper left frame for parameters and reference values
-paramFrame = Frame(root, width = 500,height = 250, relief=SUNKEN)
+paramFrame = Frame(root, width = 500,height = 360, relief=SUNKEN)
 paramFrame.pack(side=LEFT)
 
 #Lower left frame for x, y and z-plots
-plotFrame = Frame(root, width = 1000,height = 250, relief=SUNKEN)
+plotFrame = Frame(root, width = 1000,height = 200, relief=SUNKEN)
 plotFrame.pack(side=BOTTOM)
 
 #String variables for input
 PDx_K = StringVar()
+Kx = 1
+PDx_K.set(Kx)
+
 PDx_Td = StringVar()
+Tdx = 1
+PDx_Td.set(Tdx)
+
 PDy_K = StringVar()
+Ky = 1
+PDy_K.set(Ky)
+
 PDy_Td = StringVar()
+Tdy = 1
+PDy_Td.set(Tdy)
+
 PDz_K = StringVar()
+Kz = 1
+PDz_K.set(Kz)
+
 PDz_Td = StringVar()
+Tdz = 1
+PDz_Td.set(Tdz)
+
 pos_ref = StringVar()
+ref = [1.00, 2.00, 3.14]
+pos_ref.set(ref)
 
 # Input for K parameter for PD controller of x coordinate 
 param_PDx_K_Lbl = Label(paramFrame, font=('arial', 10,'bold'), text = "PDx K", bd = 10,anchor = 'w')
@@ -82,16 +103,35 @@ pos_ref_Entry.grid(row=1,column=2,columnspan=3)
 
 #Define method for apply button (Not real method)
 def btnApply():
-    global test
-    test = PDx_K.get()
-    pos_ref.set(test)
+    Kx = PDx_K.get()
+    PDx_K.set(Kx)
+    print ("PDx K = ", Kx)
+    Tdx = PDx_Td.get()
+    PDx_Td.set(Tdx)
+    print ("PDx Td = ", Tdx)
+    Ky = PDy_K.get()
+    PDy_K.set(Ky)
+    print ("PDy K = ", Ky)
+    Tdy = PDy_Td.get()
+    PDy_Td.set(Tdy)
+    print ("PDy Td = ", Tdy)
+    Kz = PDz_K.get()
+    PDz_K.set(Kz)
+    print ("PDz K = ", Kz)
+    Tdz = PDz_Td.get()
+    PDz_Td.set(Tdz) 
+    print ("PDz Td = ", Tdz)     
+    ref = pos_ref.get()
+    print ("Position reference is set to ", ref,)
+    pos_ref.set(ref)
+
 # Apply changes from input above
 Apply = Button(paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Apply", bg="powder blue",command =btnApply).grid(row=0, column = 4)
 
 #Define method for GO! button
 def btnGo():
     # TODO implement method
-    global remove
+    print ("GO")
 #GO! button
 GO = Button(paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "GO", bg="powder blue",command =btnGo).grid(row=0, column = 0)
 
@@ -99,37 +139,46 @@ GO = Button(paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold')
 #Defines method for Home button
 def btnHome():
     #TODO implement method
-    global remove
+    print ("Home")
 #Home button
 Home = Button(paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Home", bg="powder blue",command =btnHome).grid(row=0, column = 1)
 
 #Defines method for Land button
 def btnLand():
     #TODO implement method
-    global remove
+    print ("Land")
 #Land Button
 Land = Button(paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Land", bg="powder blue",command =btnLand).grid(row=0, column = 2)
 
 #Defines method for Stop button
 def btnStop():
     #TODO implement method
-    global remove
+    print ("Stop")
 #Stop button
 Stop = Button(paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Stop", bg="powder blue",command =btnStop).grid(row=0, column = 3)
 
 #Drop down menu
+def Connect():
+    print ("Connect")
+    
+def Disconnect():
+    print ("Disconnect")
+    
+def About():
+    tkinter.messagebox.showinfo("About", "CrazyFlie dude!")
 
-#menu = Menu(root)
-#root.config(menu=menu)
-#filemenu = Menu(menu)
-#menu.add_cascade(label="File", menu=filemenu)
-#filemenu.add_command(label="New", command=NewFile)
-#filemenu.add_command(label="Open...", command=OpenFile)
-#filemenu.add_separator()
-#filemenu.add_command(label="Exit", command=root.quit)
-#
-#helpmenu = Menu(menu)
-#menu.add_cascade(label="Help", menu=helpmenu)
-#helpmenu.add_command(label="About...", command=About)
+#Drop down menu File and Help    
+menu = Menu(root)
+root.config(menu=menu)
+filemenu = Menu(menu)
+menu.add_cascade(label="File", menu=filemenu)
+filemenu.add_command(label="Connect", command=Connect)
+filemenu.add_command(label="Disconnect", command=Disconnect)
+filemenu.add_separator()
+filemenu.add_command(label="Exit", command=root.destroy)
+
+helpmenu = Menu(menu)
+menu.add_cascade(label="Help", menu=helpmenu)
+helpmenu.add_command(label="About...", command=About)
 
 root.mainloop()
