@@ -11,7 +11,7 @@ root = Tk()
 #Size of window
 root.geometry("1000x600+0+0")
 #Window title
-root.title("CrazyFlie controll system")
+root.title("CrazyFlie control system")
 
 #Top frame
 Tops = Frame(root, width = 1000,height = 100, bg ="powder blue", relief=SUNKEN)
