@@ -14,7 +14,7 @@ def setParameters(params):
     
     
 def setReference(ref):
-    
+    pass
     
 def getPos():
     pass
