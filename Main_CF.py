@@ -1,8 +1,5 @@
 "main class to call other classes"
+from PD_CF import params
 
-def __init__(self):
-    self.x = 'Main method'
-    
-def Main():
-    
-    #Todo
+if __name__ == '__main__':
+    print(params)

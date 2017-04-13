@@ -1,26 +1,31 @@
 """
 Created on Wed Apr 5 11:13:54 2017
 
-@author: Nils
+@author: Michael
 """
+
+
+Kx=0
+Ky=0
+Kz=0
+
+Tdx=0
+Tdy=0
+Tdz=0
+
+params = [Kx, Ky, Kz, Tdx, Tdy, Tdz]
+
+D=0
+y=0
+
+
 
 #Init method
 def __init__(self):
     self.x = 'PD'
+    print(params)
     
-#set Parameters sent from monitor or regul?
-def setParam(): 
-   
-    # TODO
-
-# retrieve parameters
-def getParam(): 
-    # TODO
     
 #calculate controlsignal
-def calcOutput():   
-    # TODO
-
-#update state after calculating 
-def updateState():  
-    #TODO
+def calcOutput(): 
+    print(params)
