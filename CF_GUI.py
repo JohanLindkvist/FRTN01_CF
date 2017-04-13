@@ -13,14 +13,28 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
+import numpy as np
+
 import PD_CF
 
 
 class GUI:
 
-    def __init__(self,root):    
+    def __init__(self,root): 
+        
+        
         self.root=root
         self.messageBox = tkinter.messagebox
+        
+        
+        #self.mycolor = '#%02x%02x%02x' % (255, 255, 255)  # set your favourite rgb color
+        #root.configure(bg=self.mycolor)
+        
+        
         #Size of window
         root.geometry("1000x600+0+0")
         #Window title
@@ -37,6 +51,8 @@ class GUI:
         self.YplotFrame.place(x = 0, y = 200, width = 460, height = 190)
         self.ZplotFrame = Frame(root, width = 460, height = 200, relief=SUNKEN)
         self.ZplotFrame.place(x = 0, y = 400, width = 460, height = 190)
+        self.DplotFrame = Frame(root, width = 530, height = 260, relief=SUNKEN)
+        self.DplotFrame.place(x = 470, y = 250, width = 530, height = 350)
         
         #String variables for input
         self.PDx_K = StringVar()
@@ -135,7 +151,9 @@ class GUI:
         self.toolbar1 = NavigationToolbar2TkAgg(self.canvas1, self.XplotFrame)
         self.toolbar1.update()
         self.canvas1._tkcanvas.pack(side=tkinter.TOP, expand=True)
-        
+        self.f1.subplots_adjust(left=0.05,right=0.95)
+        self.a1.set_title('X-values')
+       
         #Add plot to window for Y-axis 
         self.f2 = Figure(figsize=(10,3), dpi=50)
         self.a2 = self.f2.add_subplot(111)
@@ -146,6 +164,8 @@ class GUI:
         self.toolbar2 = NavigationToolbar2TkAgg(self.canvas2, self.YplotFrame)
         self.toolbar2.update()
         self.canvas2._tkcanvas.pack(side=tkinter.TOP,fill=tkinter.BOTH, expand=True)
+        self.f2.subplots_adjust(left=0.05,right=0.95)
+        self.a2.set_title('Y-values')
         
         #Add plot to window for Z-axis 
         self.f3 = Figure(figsize=(10,3), dpi=50)
@@ -157,7 +177,45 @@ class GUI:
         self.toolbar3 = NavigationToolbar2TkAgg(self.canvas3, self.ZplotFrame)
         self.toolbar3.update()
         self.canvas3._tkcanvas.pack(side=tkinter.TOP, expand=True)
-       
+        self.f3.subplots_adjust(left=0.05,right=0.95)
+        self.a3.set_title('Z-values')
+        
+        #Add plot to window in 3D
+        self.f3D = Figure(figsize=(12,6), dpi=50)
+        self.a3D = self.f3D.gca(projection='3d')
+        self.f3D.subplots_adjust(left=0, bottom=0, right=1, top=1)
+
+        # Fake data.
+        self.X = np.arange(-5, 5, 0.25)
+        self.Y = np.arange(-5, 5, 0.25)
+        self.X, self.Y = np.meshgrid(self.X, self.Y)
+        self.R = np.sqrt(self.X**2 + self.Y**2)
+        self.Z = np.sin(self.R)
+
+
+        self.surf = self.a3D.plot_surface(self.X, self.Y, self.Z, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+
+        # Customize the z axis.
+        self.a3D.set_zlim(-1.01, 1.01)
+        self.a3D.zaxis.set_major_locator(LinearLocator(10))
+        self.a3D.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+
+        # Add a color bar which maps values to colors.
+        self.f3D.colorbar(self.surf, shrink=0.5, aspect=5)
+        
+        self.canvas3D = FigureCanvasTkAgg(self.f3D, self.DplotFrame)
+        self.canvas3D.show()
+        self.canvas3D.get_tk_widget().pack(side=tkinter.TOP, expand=True)
+        self.toolbar3D = NavigationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
+        self.toolbar3D.update()
+        self.canvas3D._tkcanvas.pack(side=tkinter.TOP, expand=True)
+        self.a3D.set_title('Fight Path in 3D')
+        
+        
+        
+        
+        
+        
         # Buttons
         self.Apply = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Apply", bg="powder blue",command =self.btnApply, width = 7).grid(row=4, column = 6)
         self.GO = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "GO", bg="powder blue",command =self.btnGo, width = 7).grid(row=1, column = 2)
