@@ -14,7 +14,7 @@ def __init__(self):
     
 #set Parameters sent from monitor or regul?
 def setParam(): 
-   
+   #This is a test
     # TODO
 
 # retrieve parameters
