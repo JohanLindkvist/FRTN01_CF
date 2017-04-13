@@ -38,7 +38,7 @@ paramFrame.pack(side=LEFT)
 plotFrame = Frame(root, width = 1000,height = 200, relief=SUNKEN)
 plotFrame.pack(side=BOTTOM)
 
-#String variables for input
+#String variables for input (temporary variables)
 PDx_K = StringVar()
 Kx = 1
 PDx_K.set(Kx)
