@@ -14,7 +14,7 @@ def setParam():
     # TODO
 
 # retrieve parameters
-def getParam(): 
+def getParam():
     # TODO
     
 #calculate controlsignal
@@ -22,5 +22,5 @@ def calcOutput():
     # TODO
 
 #update state after calculating 
-def updateState():  
+def updateState(): 
     #TODO

@@ -13,9 +13,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 
-
-from tkinter import *
-from PD_CF import *
+import PD_CF
 
 
 root = Tk()
