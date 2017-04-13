@@ -15,6 +15,7 @@ from matplotlib.figure import Figure
 
 
 from tkinter import *
+from PD_CF import *
 
 
 root = Tk()
@@ -73,6 +74,7 @@ param_PDx_K_Lbl = Label(paramFrame, font=('arial', 10,'bold'), text = "PDx K", b
 param_PDx_K_Lbl.grid(row=2,column=0,columnspan=2)
 PDx_K_Entry = Entry(paramFrame, font=('arial', 10,'bold'), textvariable = PDx_K, bd=10,insertwidth=2, bg="powder blue", justify = 'right')
 PDx_K_Entry.grid(row=2,column=2,columnspan=3)
+
 
 # Input for Td parameter for PD controller of x coordinate 
 param_PDx_Td_Lbl = Label(paramFrame, font=('arial', 10,'bold'), text = "PDx Td", bd = 10,anchor = 'w')
