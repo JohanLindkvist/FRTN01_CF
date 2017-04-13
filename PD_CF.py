@@ -19,7 +19,7 @@ def setParam():
 
 # retrieve parameters
 def getParam():
-    # TODO
+    return params
     
 #calculate controlsignal
 def calcOutput():   
