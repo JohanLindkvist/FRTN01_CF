@@ -5,12 +5,17 @@ Created on Mon Apr  3 11:13:54 2017
 @author: Johan
 """
 
-<<<<<<< HEAD
 from tkinter import*
 import tkinter.messagebox
-=======
+import matplotlib
+from matplotlib import style 
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.figure import Figure
+
+
 from tkinter import *
->>>>>>> origin/master
+
 
 root = Tk()
 #Size of window
@@ -102,7 +107,7 @@ PDz_Td_Entry.grid(row=7,column=2,columnspan=3)
 # Input for reference position
 pos_ref_Lbl = Label(paramFrame, font=('arial', 10,'bold'), text = "Pos Ref", bd = 10,anchor = 'w')
 pos_ref_Lbl.grid(row=1,column=0,columnspan=2)
-pos_ref_Entry = Entry(paramFrame, font=('arial', 10,'bold'), textvariable = pos_ref, bd=10,insertwidth=2, bg="powder blue", justify = 'right')
+pos_ref_Entry = Entry(paramFrame, font=('arial', 10,'bold'), textvariable = pos_ref, bd=10,insertwidth=2, bg="powder blue", justify = 'right',  width=20)
 pos_ref_Entry.grid(row=1,column=2,columnspan=3)
 
 #Define method for apply button (Not real method)
@@ -128,6 +133,20 @@ def btnApply():
     ref = pos_ref.get()
     print ("Position reference is set to ", ref,)
     pos_ref.set(ref)
+
+
+# Add plot to window 
+f = Figure(figsize=(5,5), dpi=100)
+a = f.add_subplot(111)
+a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+canvas = FigureCanvasTkAgg(f, plotFrame)
+canvas.show()
+canvas.get_tk_widget().pack(side=tkinter.BOTTOM, fill=tkinter.BOTH, expand=True)
+
+toolbar = NavigationToolbar2TkAgg(canvas, plotFrame)
+toolbar.update()
+canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=True)
+
 
 # Apply changes from input above
 Apply = Button(paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Apply", bg="powder blue",command =btnApply).grid(row=0, column = 4)
