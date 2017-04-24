@@ -1,28 +1,47 @@
 "Template for monitor-class"
 import threading
-import Queue 
+import time
 
-
-def __init__(self):
-    self.x = 'Monitor'
-
-def Home():
-    #Todo
-def Go():
-    #Todo 
-def Stop():
-    #Todo
-def Land():
-    #Todo
-def SetPDParam():
-    #Todo
-def Plot2D():
-    #Todo
-def Plot3D():
-    #Todo
-def GetPos():
-    #Todo
-def SetPos():
-    #Todo
-def SetRef():
-    
+class Monitor(threading.Thread):
+            
+    def __init__(self, threadID, name):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        
+    def run(self):
+        print("Starting " + self.name)
+        self.run=True
+        i=0
+        while(self.run==True):
+            print("Monitor number %d" % i)
+            i=i+1
+            time.sleep(1)
+        
+        print("Exiting " + self.name)
+        
+    def destroy(self):
+        self.run=False
+        
+    '''    
+    def Home(self):
+        #Todo
+    def Go(self):
+        #Todo 
+    def Stop(self):
+        #Todo
+    def Land(self):
+        #Todo
+    def SetPDParam(self):
+        #Todo
+    def Plot2D(self):
+        #Todo
+    def Plot3D(self):
+        #Todo
+    def GetPos(self):
+        #Todo
+    def SetPos(self):
+        #Todo
+    def SetRef(self):
+    '''
+        
