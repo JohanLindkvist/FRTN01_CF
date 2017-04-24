@@ -15,7 +15,7 @@ def main():
     #monitor = multiprocessing.Process(target=regulate,)
     
     regul = Regul_CF(1, "Regul Treahd")
-    print("Tjenaaa")
+   
     regul.start()
     GUI = CF_GUI.GUI_Thread(2, "GUI Tread")
     
@@ -27,7 +27,9 @@ def main():
     #monitor.start()
 
     #GUI.start()
-         
+    print("Tjenaaa")     
+    regul.destroy()
+    
     
     
 def terminateAll():

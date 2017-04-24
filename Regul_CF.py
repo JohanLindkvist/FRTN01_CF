@@ -5,7 +5,7 @@ import PD_CF
 
 
 class Regul_CF(threading.Thread):
-        
+    
     def __init__(self, threadID, name):
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -13,9 +13,9 @@ class Regul_CF(threading.Thread):
     
     def run(self):
         print("Starting " + self.name)
-        
+        self.run=True
         i=0
-        while(True):
+        while(self.run==True):
             print("Regul number %d" % i)
             i=i+1
             time.sleep(1)
@@ -24,7 +24,9 @@ class Regul_CF(threading.Thread):
         
     def setParameters(params):
         PD_CF.params=params
-        
+    
+    def destroy(self):
+        self.run=False
         
     def setReference(ref):
         pass
