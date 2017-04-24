@@ -18,13 +18,19 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
+import threading
 
 import PD_CF
+import cflib
+from cflib.crazyflie import Crazyflie
 
 
-class GUI:
 
-    def __init__(self,root): 
+
+class GUI():
+    
+    def __init__(self, root): 
+        
         
         
         self.root=root
@@ -43,6 +49,7 @@ class GUI:
         #Upper left frame for parameters and reference values
         self.paramFrame = Frame(root, width = 530,height = 340, relief=SUNKEN)
         self.paramFrame.place(x = 460, y = 10, width = 530, height = 250)
+        
         
         #Lower left frame for x, y and z-plots
         self.XplotFrame = Frame(root, width = 460, height = 200, relief=SUNKEN)
@@ -236,8 +243,17 @@ class GUI:
         self.helpmenu = Menu(self.menu)
         self.menu.add_cascade(label="Help", menu=self.helpmenu)
         self.helpmenu.add_command(label="About...", command=self.About)
-#    
-    
+        
+        
+        
+        
+       
+
+        
+        
+        
+        
+        
      #Define method for apply button (Not real method)
     def btnApply(self):
         self.Kx = self.PDx_K.get()
@@ -262,6 +278,7 @@ class GUI:
     #Define method for GO! button
     def btnGo(self):
         # TODO implement method
+        crazyflie.commander.send_setpoint(0, 0, 0, 50)
         print ("GO")
         self.ref[0] = self.x_ref.get()
         self.ref[1] = self.y_ref.get()
@@ -295,6 +312,15 @@ class GUI:
     
     #Drop down menu
     def Connect(self):
+        
+        cflib.crtp.init_drivers()
+        available = cflib.crtp.scan_interfaces()
+        for i in available:
+            print("Interface with URI [%s] found and name/comment [%s]" % (i[0], i[1]))
+ 
+        crazyflie.connected.add_callback(crazyflie_connected)
+        crazyflie.open_link("radio://0/10/250K")
+            
         print ("Connect")
         
     def Disconnect(self):
@@ -302,10 +328,23 @@ class GUI:
         
     def About(self):
         self.messageBox.showinfo("About", "CrazyFlie dude!")
-    
    
+    
 
 
-root = Tk()
-my_gui=GUI(root)
-root.mainloop()
+class GUI_Thread(threading.Thread):
+    
+    def __init__(self, threadID, name):
+        #Init GUI Thread
+        self.root = Tk()
+        GUI(self.root)
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.root.mainloop()
+        
+    def run(self): 
+        print("GOt Her")
+
+#g = GUI_Thread(2, "Wiasd")
+#g.start()

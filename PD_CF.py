@@ -3,7 +3,7 @@ Created on Wed Apr 5 11:13:54 2017
 
 @author: Nils
 """
-
+import threading
 #K_x,K_xTd,K_y,K_yTd,K_z,K_zTd
 params = [0,0,0,0,0,0]
 oldX=0
@@ -46,3 +46,5 @@ def updateParam(x,y,z):
     oldX=x
     oldY=y
     oldZ=z
+    
+    

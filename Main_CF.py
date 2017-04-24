@@ -1,8 +1,8 @@
 "main class to call other classes"
-from Regul_CF import regulate
-import CF_GUI
-import multiprocessing
-
+from Regul_CF import Regul_CF
+import CF_GUI 
+import threading
+from tkinter import*
 
 def __init__(self):
     self.x = 'Main method'
@@ -13,12 +13,20 @@ def main():
     #Create threads
     #regulator = multiprocessing.Process(target=regulate ,)
     #monitor = multiprocessing.Process(target=regulate,)
-    GUI = multiprocessing.Process(target=CF_GUI.__init__,)
+    
+    regul = Regul_CF(1, "Regul Treahd")
+    print("Tjenaaa")
+    regul.start()
+    GUI = CF_GUI.GUI_Thread(2, "GUI Tread")
+    
+    
+    
  
     #Start threads
     #regulator.start()
     #monitor.start()
-    GUI.start()
+
+    #GUI.start()
          
     
     

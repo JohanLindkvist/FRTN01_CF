@@ -1,5 +1,6 @@
 "Template for monitor-class"
-
+import threading
+import Queue 
 
 
 def __init__(self):
