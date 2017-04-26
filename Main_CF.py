@@ -20,7 +20,7 @@ def main():
     
     monitor.start()
     regul.start()
-    GUI = CF_GUI.GUI_Thread(2, "GUI Tread")
+    GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul)
     
     
     
