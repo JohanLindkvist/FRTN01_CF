@@ -10,35 +10,40 @@ class Regul_CF(threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
-    
+        self.ref=[0,0,0]
+        
+  
     def run(self):
         print("Starting " + self.name)
         self.run=True
         i=0
         while(self.run==True):
-            print("Regul number %d" % i)
+            print("Regulating")
+            self.regulate("regulatdor",300)
             i=i+1
             time.sleep(1)
         
         print("Exiting " + self.name)
         
-    def setParameters(params):
+    def setParameters(self,params):
         PD_CF.params=params
     
     def destroy(self):
         self.run=False
         
-    def setReference(ref):
-        pass
+    def setReference(self,ref):
+        
+    
+        self.ref=ref
         
     def getPos():
         pass
     
-    def regulate(name, stop):
+    def regulate(self, name, stop):
         i=0
         while(True):
             i=i+1
-            print(i, name)
+            print(PD_CF.calcOutput([0,0,0],self.ref))
             time.sleep(0.5)
             if i==stop:
                 break

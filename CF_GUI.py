@@ -19,20 +19,21 @@ from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 import threading
+from Regul_CF import Regul_CF
 
 import PD_CF
-import cflib
-from cflib.crazyflie import Crazyflie
+# import cflib
+# from cflib.crazyflie import Crazyflie
 
 
 
 
 class GUI():
     
-    def __init__(self, root): 
+    def __init__(self, root,regul): 
         
         
-        
+        self.regul=regul
         self.root=root
         self.messageBox = tkinter.messagebox
         
@@ -256,37 +257,40 @@ class GUI():
         
      #Define method for apply button (Not real method)
     def btnApply(self):
-        self.Kx = self.PDx_K.get()
-        self.PDx_K.set(self.Kx)
+        self.Kx = float(self.PDx_K.get())
+        #self.PDx_K.set(self.Kx)
         print ("PDx K = ", self.Kx)
-        self.Tdx = self.PDx_Td.get()
-        self.PDx_Td.set(self.Tdx)
+        self.Tdx = float(self.PDx_Td.get())
+        #self.PDx_Td.set(self.Tdx)
         print ("PDx Td = ", self.Tdx)
-        self.Ky = self.PDy_K.get()
-        self.PDy_K.set(self.Ky)
+        self.Ky = float(self.PDy_K.get())
+        #self.PDy_K.set(self.Ky)
         print ("PDy K = ", self.Ky)
-        self.Tdy = self.PDy_Td.get()
-        self.PDy_Td.set(self.Tdy)
+        self.Tdy = float(self.PDy_Td.get())
+        #self.PDy_Td.set(self.Tdy)
         print ("PDy Td = ", self.Tdy)
-        self.Kz = self.PDz_K.get()
-        self.PDz_K.set(self.Kz)
+        self.Kz = float(self.PDz_K.get())
+        #self.PDz_K.set(self.Kz)
         print ("PDz K = ", self.Kz)
-        self.Tdz = self.PDz_Td.get()
-        self.PDz_Td.set(self.Tdz) 
-        print ("PDz Td = ", self.Tdz)     
+        self.Tdz = float(self.PDz_Td.get())
+        #self.PDz_Td.set(self.Tdz) 
+        print ("PDz Td = ", self.Tdz)
+        self.regul.setParameters([self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz])
                 
     #Define method for GO! button
     def btnGo(self):
         # TODO implement method
-        crazyflie.commander.send_setpoint(0, 0, 0, 50)
+        
+        # crazyflie.commander.send_setpoint(0, 0, 0, 50)
         print ("GO")
-        self.ref[0] = self.x_ref.get()
-        self.ref[1] = self.y_ref.get()
-        self.ref[2] = self.z_ref.get()
-        print ("Position reference is set to ", self.ref)
+        self.ref[0] = float(self.x_ref.get())
+        self.ref[1] = float(self.y_ref.get())
+        self.ref[2] = float(self.z_ref.get())
+       # print ("Position reference is set to ", self.ref)
         self.x_ref.set(self.ref[0])
         self.y_ref.set(self.ref[1])
-        self.z_ref.set(self.ref[2])    
+        self.z_ref.set(self.ref[2])  
+        self.regul.setReference(self.ref)
     
     #Defines method for Home button
     def btnHome(self):
@@ -313,13 +317,14 @@ class GUI():
     #Drop down menu
     def Connect(self):
         
-        cflib.crtp.init_drivers()
-        available = cflib.crtp.scan_interfaces()
-        for i in available:
-            print("Interface with URI [%s] found and name/comment [%s]" % (i[0], i[1]))
+       # cflib.crtp.init_drivers()
+        # available = cflib.crtp.scan_interfaces()
+        # for i in available:
+          #  print("Interface with URI [%s] found and name/comment [%s]" % (i[0], i[1]))
  
-        crazyflie.connected.add_callback(crazyflie_connected)
-        crazyflie.open_link("radio://0/10/250K")
+      #  crazyflie.connected.add_callback(crazyflie_connected)
+     #   crazyflie.open_link("radio://0/10/250K")
+     
             
         print ("Connect")
         
@@ -334,10 +339,10 @@ class GUI():
 
 class GUI_Thread(threading.Thread):
     
-    def __init__(self, threadID, name):
-        #Init GUI Thread
+    def __init__(self, threadID, name, regul):
+        #Init GUI Thread   
         self.root = Tk()
-        GUI(self.root)
+        GUI(self.root, regul)
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
