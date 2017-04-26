@@ -41,7 +41,7 @@ class Regul_CF(threading.Thread):
     
     def regulate(self, name, stop):
         i=0
-        while(True):
+        while(self.run):
             i=i+1
             print(PD_CF.calcOutput([0,0,0],self.ref))
             time.sleep(0.5)
