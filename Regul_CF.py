@@ -2,6 +2,7 @@
 import time
 import threading
 import PD_CF
+#import cflib
 
 
 class Regul_CF(threading.Thread):
@@ -44,6 +45,7 @@ class Regul_CF(threading.Thread):
         while(self.run):
             i=i+1
             print(PD_CF.calcOutput([0,0,0],self.ref))
+            
             time.sleep(0.5)
             if i==stop:
                 break
