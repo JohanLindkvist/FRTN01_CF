@@ -5,8 +5,8 @@ Created on Mon Apr  3 11:13:54 2017
 @author: Johan
 """
 
-from tkinter import*
-import tkinter.messagebox
+from Tkinter import*
+import tkMessageBox
 import matplotlib
 from matplotlib import style 
 matplotlib.use("TkAgg")
@@ -35,7 +35,7 @@ class GUI():
         
         self.regul=regul
         self.root=root
-        self.messageBox = tkinter.messagebox
+        self.messageBox = tkMessageBox
         
         
         #self.mycolor = '#%02x%02x%02x' % (255, 255, 255)  # set your favourite rgb color
@@ -155,10 +155,10 @@ class GUI():
         self.a1.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
         self.canvas1 = FigureCanvasTkAgg(self.f1, self.XplotFrame)
         self.canvas1.show()
-        self.canvas1.get_tk_widget().pack(side=tkinter.TOP, expand=True)
+        self.canvas1.get_tk_widget().pack(side=TOP, expand=True)
         self.toolbar1 = NavigationToolbar2TkAgg(self.canvas1, self.XplotFrame)
         self.toolbar1.update()
-        self.canvas1._tkcanvas.pack(side=tkinter.TOP, expand=True)
+        self.canvas1._tkcanvas.pack(side=TOP, expand=True)
         self.f1.subplots_adjust(left=0.05,right=0.95)
         self.a1.set_title('X-values')
        
@@ -168,10 +168,10 @@ class GUI():
         self.a2.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
         self.canvas2 = FigureCanvasTkAgg(self.f2, self.YplotFrame)
         self.canvas2.show()
-        self.canvas2.get_tk_widget().pack(side=tkinter.TOP, expand=True)
+        self.canvas2.get_tk_widget().pack(side=TOP, expand=True)
         self.toolbar2 = NavigationToolbar2TkAgg(self.canvas2, self.YplotFrame)
         self.toolbar2.update()
-        self.canvas2._tkcanvas.pack(side=tkinter.TOP,fill=tkinter.BOTH, expand=True)
+        self.canvas2._tkcanvas.pack(side=TOP,fill=BOTH, expand=True)
         self.f2.subplots_adjust(left=0.05,right=0.95)
         self.a2.set_title('Y-values')
         
@@ -181,10 +181,10 @@ class GUI():
         self.a3.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
         self.canvas3 = FigureCanvasTkAgg(self.f3, self.ZplotFrame)
         self.canvas3.show()
-        self.canvas3.get_tk_widget().pack(side=tkinter.TOP, expand=True)
+        self.canvas3.get_tk_widget().pack(side=TOP, expand=True)
         self.toolbar3 = NavigationToolbar2TkAgg(self.canvas3, self.ZplotFrame)
         self.toolbar3.update()
-        self.canvas3._tkcanvas.pack(side=tkinter.TOP, expand=True)
+        self.canvas3._tkcanvas.pack(side=TOP, expand=True)
         self.f3.subplots_adjust(left=0.05,right=0.95)
         self.a3.set_title('Z-values')
         
@@ -213,10 +213,10 @@ class GUI():
         
         self.canvas3D = FigureCanvasTkAgg(self.f3D, self.DplotFrame)
         self.canvas3D.show()
-        self.canvas3D.get_tk_widget().pack(side=tkinter.TOP, expand=True)
+        self.canvas3D.get_tk_widget().pack(side=TOP, expand=True)
         self.toolbar3D = NavigationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
         self.toolbar3D.update()
-        self.canvas3D._tkcanvas.pack(side=tkinter.TOP, expand=True)
+        self.canvas3D._tkcanvas.pack(side=TOP, expand=True)
         self.a3D.set_title('Fight Path in 3D')
         
         

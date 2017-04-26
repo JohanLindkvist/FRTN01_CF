@@ -3,7 +3,7 @@ from Regul_CF import Regul_CF
 from Monitor_CF import Monitor
 import CF_GUI 
 import threading
-from tkinter import*
+from Tkinter import*
 
 def __init__(self):
     self.x = 'Main method'
