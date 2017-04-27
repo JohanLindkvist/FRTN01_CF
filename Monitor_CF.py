@@ -24,16 +24,7 @@ class Monitor(threading.Thread):
         self.run=False
         
     '''    
-    def Home(self):
-        #Todo
-    def Go(self):
-        #Todo 
-    def Stop(self):
-        #Todo
-    def Land(self):
-        #Todo
-    def SetPDParam(self):
-        #Todo
+
     def Plot2D(self):
         #Todo
     def Plot3D(self):
