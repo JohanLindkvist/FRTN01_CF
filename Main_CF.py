@@ -4,18 +4,9 @@ from Monitor_CF import Monitor
 import CF_GUI 
 import threading
 from Tkinter import*
-from Regul_CF import Regul_CF
-from Monitor_CF import Monitor
-import CF_GUI 
-import threading
-from Tkinter import*
-import cflib
+
 from cflib.crazyflie import Crazyflie
         
-    
-def terminateAll():
-    #terminate all of the processes
-    pass
 
 def _connected(link_uri):
     """ This callback is called form the Crazyflie API when a Crazyflie

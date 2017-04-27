@@ -13,36 +13,35 @@ class Regul_CF(threading.Thread):
         self.threadID = threadID
         self.name = name
         self.ref=[0,0,0]
-		self._cf=_cf
-  
-	def run(self):
-		print("Starting " + self.name)
-		self.run=True
-		while(self.run):
-			self.pos = _cf.getPos(TODO)
-			output = PD_CF.calcOutput([0,0,0],self.ref)
-			self._cf.commander.send_setpoint(output(0),output(1),0,output(2))
+        self._cf=_cf
+    
+    def run(self):
+        print("Starting " + self.name)
+        self.run=True
+        while(self.run):
+            self.pos = _cf.getPos(TODO)
+            output = PD_CF.calcOutput([0,0,0],self.ref)
+            self._cf.commander.send_setpoint(output(0),output(1),0,output(2))
 
-	def setParameters(self,params):
-		PD_CF.params=params
+    def setParameters(self,params):
+        PD_CF.params=params
     
     def destroy(self):
         self.run=False
         
     def setReference(self,ref):
-		self.ref=ref
+        self.ref=ref
         
     def getPos(self):
-		return self.pos
+        return self.pos
 
     def land(self):
-		
 		#TODO
-		pass
+        pass
 	
     def stop(self):
-	#TODO
-	pass
+	   #TODO
+       pass
 		
     
     
