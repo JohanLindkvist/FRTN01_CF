@@ -35,7 +35,12 @@ class GUI():
         self.regul=regul
         self.root=root
         self.messageBox = tkMessageBox
-
+        
+        
+        #self.mycolor = '#%02x%02x%02x' % (255, 255, 255)  # set your favourite rgb color
+        #root.configure(bg=self.mycolor)
+        
+        
         #Size of window
         root.geometry("1000x600+0+0")
         #Window title
@@ -44,6 +49,7 @@ class GUI():
         #Upper left frame for parameters and reference values
         self.paramFrame = Frame(root, width = 530,height = 340, relief=SUNKEN)
         self.paramFrame.place(x = 460, y = 10, width = 530, height = 250)
+        
         
         #Lower left frame for x, y and z-plots
         self.XplotFrame = Frame(root, width = 460, height = 200, relief=SUNKEN)
@@ -103,6 +109,7 @@ class GUI():
         self.ref_z_lbl.grid(row = 3, column = 0)
         self.ref_z_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.z_ref, bd = 10, bg = "powder blue", justify = 'right', width = 5)
         self.ref_z_entry.grid(row = 3, column = 1)
+        
         
         #Input fields for PD parameters
         #X-axis
@@ -192,6 +199,7 @@ class GUI():
         self.R = np.sqrt(self.X**2 + self.Y**2)
         self.Z = np.sin(self.R)
 
+
         self.surf = self.a3D.plot_surface(self.X, self.Y, self.Z, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 
         # Customize the z axis.
@@ -209,14 +217,19 @@ class GUI():
         self.toolbar3D.update()
         self.canvas3D._tkcanvas.pack(side=TOP, expand=True)
         self.a3D.set_title('Fight Path in 3D')
-
+        
+        
+        
+        
+        
+        
         # Buttons
         self.Apply = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Apply", bg="powder blue",command =self.btnApply, width = 7).grid(row=4, column = 6)
         self.GO = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "GO", bg="powder blue",command =self.btnGo, width = 7).grid(row=1, column = 2)
         self.Home = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Home", bg="powder blue",command =self.btnHome, width = 7).grid(row=1, column = 3)
         self.Land = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Land", bg="powder blue",command =self.btnLand, width = 7).grid(row=2, column = 2)
         self.Stop = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Stop", bg="powder blue",command =self.btnStop, width = 7).grid(row=2, column = 3)
-        self.Quit = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Quit", bg="powder blue",command =self.root.destroy, width = 18).grid(row=3, column = 2, columnspan = 2)
+        
         #Drop down menu File and Help    
         self.menu = Menu(root)
         self.root.config(menu=self.menu)
@@ -230,6 +243,16 @@ class GUI():
         self.helpmenu = Menu(self.menu)
         self.menu.add_cascade(label="Help", menu=self.helpmenu)
         self.helpmenu.add_command(label="About...", command=self.About)
+        
+        
+        
+        
+       
+
+        
+        
+        
+        
         
      #Define method for apply button (Not real method)
     def btnApply(self):
@@ -251,15 +274,22 @@ class GUI():
         self.Tdz = float(self.PDz_Td.get())
         #self.PDz_Td.set(self.Tdz) 
         print ("PDz Td = ", self.Tdz)
-        self.regul.setParameters([self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz])
+		PD_CF.params=[self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz]
+        #self.regul.setParameters([self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz])
                 
     #Define method for GO! button
     def btnGo(self):
+        # TODO implement method
+        
         # crazyflie.commander.send_setpoint(0, 0, 0, 50)
         print ("GO")
         self.ref[0] = float(self.x_ref.get())
         self.ref[1] = float(self.y_ref.get())
-        self.ref[2] = float(self.z_ref.get()) 
+        self.ref[2] = float(self.z_ref.get())
+       # print ("Position reference is set to ", self.ref)
+        self.x_ref.set(self.ref[0])
+        self.y_ref.set(self.ref[1])
+        self.z_ref.set(self.ref[2])  
         self.regul.setReference(self.ref)
     
     #Defines method for Home button
