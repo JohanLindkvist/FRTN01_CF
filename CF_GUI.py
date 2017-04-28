@@ -274,7 +274,7 @@ class GUI():
         self.Tdz = float(self.PDz_Td.get())
         #self.PDz_Td.set(self.Tdz) 
         print ("PDz Td = ", self.Tdz)
-		PD_CF.params=[self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz]
+        PD_CF.params=[self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz]
         #self.regul.setParameters([self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz])
                 
     #Define method for GO! button
