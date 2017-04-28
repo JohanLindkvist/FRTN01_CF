@@ -19,10 +19,15 @@ class Regul_CF(threading.Thread):
         print("Starting " + self.name)
         self.run=True
         while(self.run):
-            self.pos = _cf.getPos(TODO)
+            #self.pos = _cf.getPos(TODO)
             output = PD_CF.calcOutput([0,0,0],self.ref)
-            self._cf.commander.send_setpoint(output(0),output(1),0,output(2))
-
+            self._cf.commander.send_setpoint(output[0],output[1],0,output[2])
+        self._cf.commander.send_setpoint(0, 0, 0, 0)
+        # Make sure that the last packet leaves before the link is closed
+        # since the message queue is not flushed before closing
+        time.sleep(0.1)
+        self._cf.close_link()        
+        
     def setParameters(self,params):
         PD_CF.params=params
     

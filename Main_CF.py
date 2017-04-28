@@ -3,9 +3,13 @@ from Regul_CF import Regul_CF
 from Monitor_CF import Monitor
 import CF_GUI 
 import threading
+from threading import Thread
 from Tkinter import*
-
+import cflib
 from cflib.crazyflie import Crazyflie
+#Supposed to remove an error 
+import logging
+logging.basicConfig(level=logging.ERROR)
         
 
 def _connected(link_uri):
@@ -14,7 +18,7 @@ def _connected(link_uri):
 
     # Start a separate thread to do the motor test.
     # Do not hijack the calling thread!
-    Thread(target=_ramp_motors).start()
+    #Thread(target=_ramp_motors).start()
 
 def _connection_failed(link_uri, msg):
     """Callback when connection initial connection fails (i.e no Crazyflie
@@ -44,17 +48,17 @@ def __init__(self):
 
     
     
-def main():
+#def main():
     #Create threads
     #regulator = multiprocessing.Process(target=regulate ,)
     #monitor = multiprocessing.Process(target=regulate,)
     
-    regul = Regul_CF(1, "Regul Thread")
-    monitor = Monitor(2, "Monitor Thread")
+    #regul = Regul_CF(1, "Regul Thread")
+    #monitor = Monitor(2, "Monitor Thread")
     
-    monitor.start()
-    regul.start()
-    GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul)
+    #monitor.start()
+    #regul.start()
+    #GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul)
     
     
     
@@ -64,9 +68,19 @@ def main():
     #monitor.start()
 
     #GUI.start()
-    print("Tjenaaa")     
-    regul.destroy()
-    monitor.destroy()
+    #print("Tjenaaa")     
+    #regul.destroy()
+    #monitor.destroy()
+
+	#Create threads
+	#regulator = multiprocessing.Process(target=regulate ,)
+	#monitor = multiprocessing.Process(target=regulate,)
+	#Start threads
+	#regulator.start()
+	#monitor.start()
+	#GUI.start()
+	#print("GUI closed, stopping threads")     
+    
     
     
     
@@ -103,6 +117,26 @@ def terminateAll():
     regul.destroy()
     monitor.destroy()
 
-if __name__ == "__main__": main()
-
+if __name__ == "__main__":
+	cflib.crtp.init_drivers(enable_debug_driver=False)
+    # Scan for Crazyflies and use the first one found
+	print('Looking for Crazyflie')
+	available = cflib.crtp.scan_interfaces()
+	print('Crazyflies found:')
+	for i in available:
+		print(i[0])
+	if len(available) > 0:
+		_cf = Crazyflie()
+		connectCF(_cf,available[0][0])
+		regul = Regul_CF(1, "Regul Thread", _cf)
+		#monitor = Monitor(2, "Monitor Thread")
+		#monitor.start()
+		regul.start()
+		GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul)
+		GUI.start()
+		  #return 0
+	else:
+		print("hello stupid world")
+		#regul.destroy()
+		#monitor.destroy()
 

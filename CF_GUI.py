@@ -311,8 +311,8 @@ class GUI():
     
     #Defines method for Stop button
     def btnStop(self):
-        #TODO implement method
-        print ("Stop")
+        self.regul.destroy()
+        print ("Regul stoped")
     
     #Drop down menu
     def Connect(self):
@@ -349,7 +349,7 @@ class GUI_Thread(threading.Thread):
         self.root.mainloop()
         
     def run(self): 
-        print("GOt Her")
+        print("Closed GUI")
 
 #g = GUI_Thread(2, "Wiasd")
 #g.start()
