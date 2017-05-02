@@ -19,8 +19,18 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import numpy as np
 import threading
 from Regul_CF import Regul_CF
+import cflib
+from cflib.crazyflie import Crazyflie
+from cflib.crazyflie.log import LogConfig
+from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
+from cflib.crazyflie.syncLogger import SyncLogger
+import logging
+import cflib.crtp  # noqa
+import time
 
 import PD_CF
+
+logging.basicConfig(level=logging.ERROR)
 # import cflib
 # from cflib.crazyflie import Crazyflie
 
@@ -29,20 +39,16 @@ import PD_CF
 
 class GUI():
     
-    def __init__(self, root,regul): 
+    def __init__(self, root, regul, cf): 
         
-        
+        self._cf = cf
         self.regul=regul
         self.root=root
         self.messageBox = tkMessageBox
         
         
-        #self.mycolor = '#%02x%02x%02x' % (255, 255, 255)  # set your favourite rgb color
-        #root.configure(bg=self.mycolor)
-        
-        
         #Size of window
-        root.geometry("1000x600+0+0")
+        root.geometry("1000x600+0+0") 
         #Window title
         root.title("CrazyFlie control system")
                 
@@ -79,7 +85,7 @@ class GUI():
         self.PDy_Td.set(self.Tdy)
         
         self.PDz_K = StringVar()
-        self.Kz = 1
+        self.Kz = 11000
         self.PDz_K.set(self.Kz)
         
         self.PDz_Td = StringVar()
@@ -229,13 +235,14 @@ class GUI():
         self.Home = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Home", bg="powder blue",command =self.btnHome, width = 7).grid(row=1, column = 3)
         self.Land = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Land", bg="powder blue",command =self.btnLand, width = 7).grid(row=2, column = 2)
         self.Stop = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Stop", bg="powder blue",command =self.btnStop, width = 7).grid(row=2, column = 3)
+        self.Quit = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Quit", bg="powder blue",command =self.btnQuit, width = 18).grid(row=3, column = 2, columnspan = 2)
         
         #Drop down menu File and Help    
         self.menu = Menu(root)
         self.root.config(menu=self.menu)
         self.filemenu = Menu(self.menu)
         self.menu.add_cascade(label="File", menu=self.filemenu)
-        self.filemenu.add_command(label="Connect", command=self.Connect)
+        self.filemenu.add_command(label="Connect", command=self.connectCF)
         self.filemenu.add_command(label="Disconnect", command=self.Disconnect)
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=root.destroy)
@@ -244,65 +251,36 @@ class GUI():
         self.menu.add_cascade(label="Help", menu=self.helpmenu)
         self.helpmenu.add_command(label="About...", command=self.About)
         
-        
-        
-        
-       
 
-        
-        
-        
-        
-        
      #Define method for apply button (Not real method)
     def btnApply(self):
         self.Kx = float(self.PDx_K.get())
-        #self.PDx_K.set(self.Kx)
-        print ("PDx K = ", self.Kx)
         self.Tdx = float(self.PDx_Td.get())
-        #self.PDx_Td.set(self.Tdx)
-        print ("PDx Td = ", self.Tdx)
         self.Ky = float(self.PDy_K.get())
-        #self.PDy_K.set(self.Ky)
-        print ("PDy K = ", self.Ky)
         self.Tdy = float(self.PDy_Td.get())
-        #self.PDy_Td.set(self.Tdy)
-        print ("PDy Td = ", self.Tdy)
         self.Kz = float(self.PDz_K.get())
-        #self.PDz_K.set(self.Kz)
-        print ("PDz K = ", self.Kz)
         self.Tdz = float(self.PDz_Td.get())
-        #self.PDz_Td.set(self.Tdz) 
-        print ("PDz Td = ", self.Tdz)
         PD_CF.params=[self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz]
-        #self.regul.setParameters([self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz])
                 
     #Define method for GO! button
     def btnGo(self):
-        # TODO implement method
-        
-        # crazyflie.commander.send_setpoint(0, 0, 0, 50)
-        print ("GO")
+        self.regul.Go()
+        #print ("GO")
         self.ref[0] = float(self.x_ref.get())
         self.ref[1] = float(self.y_ref.get())
-        self.ref[2] = float(self.z_ref.get())
-       # print ("Position reference is set to ", self.ref)
-        self.x_ref.set(self.ref[0])
-        self.y_ref.set(self.ref[1])
-        self.z_ref.set(self.ref[2])  
+        self.ref[2] = float(self.z_ref.get()) 
         self.regul.setReference(self.ref)
     
     #Defines method for Home button
     def btnHome(self):
-        #TODO implement method
-        print ("Home")
+        #print ("Home")
         self.ref[0] = 0
         self.ref[1] = 0
         self.ref[2] = 0
-        print ("Position reference is set to ", self.ref)
         self.x_ref.set(self.ref[0])
         self.y_ref.set(self.ref[1])
         self.z_ref.set(self.ref[2])
+        self.regul.setReference(self.ref)
     
     #Defines method for Land button
     def btnLand(self):
@@ -311,38 +289,103 @@ class GUI():
     
     #Defines method for Stop button
     def btnStop(self):
+        self.regul.stop()
+        print ("Stopped")
+
+    def btnQuit(self):
         self.regul.destroy()
-        print ("Regul stoped")
-    
+        self.root.destroy()
     #Drop down menu
-    def Connect(self):
-        
-       # cflib.crtp.init_drivers()
-        # available = cflib.crtp.scan_interfaces()
-        # for i in available:
-          #  print("Interface with URI [%s] found and name/comment [%s]" % (i[0], i[1]))
- 
-      #  crazyflie.connected.add_callback(crazyflie_connected)
-     #   crazyflie.open_link("radio://0/10/250K")
-     
-            
-        print ("Connect")
+    
         
     def Disconnect(self):
+        #LowPrio ToDo
         print ("Disconnect")
         
     def About(self):
         self.messageBox.showinfo("About", "CrazyFlie dude!")
-   
+    
+    
     
 
+    def _connection_failed(self,link_uri, msg):
+        """Callback when connection initial connection fails (i.e no Crazyflie
+        at the specified address)"""
+        print('Connection to %s failed: %s' % (link_uri, msg))
+
+    def _connection_lost(self,link_uri, msg):
+        """Callback when disconnected after a connection has been made (i.e
+        Crazyflie moves out of range)"""
+        print('Connection to %s lost: %s' % (link_uri, msg))
+
+    def _disconnected(self,link_uri):
+        """Callback when the Crazyflie is disconnected (called in all cases)"""
+        print('Disconnected from %s' % link_uri)
+    
+    def _connected(self, link_uri):
+        """ This callback is called form the Crazyflie API when a Crazyflie
+        has been connected and the TOCs have been downloaded."""
+
+        # Start a separate thread to do the motor test.
+        # Do not hijack the calling thread!
+        #Thread(target=_ramp_motors).start()
+    
+    def connectCF(self):
+        cflib.crtp.init_drivers(enable_debug_driver=False)
+        
+        self._lg_stab = LogConfig(name='Position', period_in_ms=100)
+        self._lg_stab.add_variable('kalman.stateX', 'float')
+        self._lg_stab.add_variable('kalman.stateY', 'float')
+        self._lg_stab.add_variable('kalman.stateZ', 'float')
+        
+        #Scan for Crazyflies and use the first one found
+        print('Looking for Crazyflie')
+        self.available = cflib.crtp.scan_interfaces()
+        print('Crazyflies found:')
+        for i in self.available:
+            print(i[0])
+		    
+        if len(self.available) > 0:    
+            self.link_uri=self.available[0][0]
+            self._cf.connected.add_callback(self._connected)
+            self._cf.disconnected.add_callback(self._disconnected)
+            self._cf.connection_failed.add_callback(self._connection_failed)
+            self._cf.connection_lost.add_callback(self._connection_lost)
+            self._cf.open_link(self.link_uri)	
+            print('Connecting to %s' % self.link_uri) 
+   
+    def _connected(self, link_uri):
+        print ('connected to crazyflie')
+        try:
+            self._cf.log.add_config(self._lg_stab)
+            # This callback will receive the data
+            self._lg_stab.data_received_cb.add_callback(self._stab_log_data)
+            # This callback will be called on errors
+            self._lg_stab.error_cb.add_callback(self._stab_log_error)
+            # Start the logging
+            self._lg_stab.start()
+        except KeyError as e:
+            print('Could not start log configuration,'
+                  '{} not found in TOC'.format(str(e)))
+        except AttributeError:
+            print('Could not add Stabilizer log config, bad configuration.')
+
+    def _stab_log_error(self, logconf, msg):
+        """Callback from the log API when an error occurs"""
+        print('Error when logging %s: %s' % (logconf.name, msg))
+
+    def _stab_log_data(self, timestamp, data, logconf):
+        """Callback froma the log API when data arrives"""
+       
+        self.regul.updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
+      
 
 class GUI_Thread(threading.Thread):
     
-    def __init__(self, threadID, name, regul):
+    def __init__(self, threadID, name, regul,_cf):
         #Init GUI Thread   
         self.root = Tk()
-        GUI(self.root, regul)
+        GUI(self.root, regul,_cf)
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
@@ -351,5 +394,3 @@ class GUI_Thread(threading.Thread):
     def run(self): 
         print("Closed GUI")
 
-#g = GUI_Thread(2, "Wiasd")
-#g.start()

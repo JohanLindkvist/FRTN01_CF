@@ -45,45 +45,9 @@ def connectCF(_cf, link_uri):
 
 def __init__(self):
     self.x = 'Main method'
+        
 
-    
-    
-#def main():
-    #Create threads
-    #regulator = multiprocessing.Process(target=regulate ,)
-    #monitor = multiprocessing.Process(target=regulate,)
-    
-    #regul = Regul_CF(1, "Regul Thread")
-    #monitor = Monitor(2, "Monitor Thread")
-    
-    #monitor.start()
-    #regul.start()
-    #GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul)
-    
-    
-    
- 
-    #Start threads
-    #regulator.start()
-    #monitor.start()
-
-    #GUI.start()
-    #print("Tjenaaa")     
-    #regul.destroy()
-    #monitor.destroy()
-
-	#Create threads
-	#regulator = multiprocessing.Process(target=regulate ,)
-	#monitor = multiprocessing.Process(target=regulate,)
-	#Start threads
-	#regulator.start()
-	#monitor.start()
-	#GUI.start()
-	#print("GUI closed, stopping threads")     
-    
-    
-    
-    
+#Are we using this?? /Emil    
 def terminateAll():
     #terminate all of the processes
     pass
@@ -105,38 +69,16 @@ def terminateAll():
 		return 0
     else:
 		print("hello stupid world")
-
-	#Create threads
-	#regulator = multiprocessing.Process(target=regulate ,)
-	#monitor = multiprocessing.Process(target=regulate,)
-	#Start threads
-	#regulator.start()
-	#monitor.start()
-	#GUI.start()
-	#print("GUI closed, stopping threads")     
     regul.destroy()
     monitor.destroy()
 
 if __name__ == "__main__":
-	cflib.crtp.init_drivers(enable_debug_driver=False)
-    # Scan for Crazyflies and use the first one found
-	print('Looking for Crazyflie')
-	available = cflib.crtp.scan_interfaces()
-	print('Crazyflies found:')
-	for i in available:
-		print(i[0])
-	if len(available) > 0:
-		_cf = Crazyflie()
-		connectCF(_cf,available[0][0])
-		regul = Regul_CF(1, "Regul Thread", _cf)
-		#monitor = Monitor(2, "Monitor Thread")
-		#monitor.start()
-		regul.start()
-		GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul)
-		GUI.start()
-		  #return 0
-	else:
-		print("hello stupid world")
-		#regul.destroy()
-		#monitor.destroy()
-
+    _cf = Crazyflie()
+    regul = Regul_CF(1, "Regul Thread", _cf)
+	#monitor = Monitor(2, "Monitor Thread")
+	#monitor.start()
+    regul.start()
+    GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul,_cf)
+    regul.destroy()
+	#monitor.destroy()
+		  

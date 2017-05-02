@@ -9,7 +9,7 @@ Created on Wed Apr 5 11:13:54 2017
 
 x = 'PD'
 #K_x,K_xTd,K_y,K_yTd,K_z,K_zTd
-params = [0,0,0,0,0,0]
+params = [1,1,1,1,11000,1]
 oldX=0
 oldY=0
 oldZ=0
@@ -39,11 +39,16 @@ def calcOutput(pos, ref):
     params[1] = adx*params[1]-bdx*(pos[0]-oldX)
     params[3] = ady*params[3]-bdy*(pos[1]-oldY)
     params[5] = adz*params[5]-bdz*(pos[2]-oldZ)
-    outputX = params[0]*(Beta*errorarray[0])+params[1]
-    outputY = params[2]*(Beta*errorarray[1])+params[3]
-    outputZ = params[4]*(Beta*errorarray[2])+params[5]
-    return outputX,outputY,outputZ
-    # TODO
+    outputRoll = params[0]*(Beta*errorarray[0])+params[1]
+    outputPitch = params[2]*(Beta*errorarray[1])+params[3]
+    outputThrust = params[4]*(Beta*errorarray[2])+params[5]
+    if outputThrust > (0xFFFF-1):
+        outputThrust = 65530
+    if outputPitch > (0xFFFF-1):
+        outputPitch = 65530
+    if outputRoll > (0xFFFF-1):
+        outputRoll = 65530
+    return outputRoll,outputPitch,outputThrust
 
 #update state after calculating (maybe not neccesary??)
 def updateState(x,y,z):
