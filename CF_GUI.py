@@ -69,33 +69,33 @@ class GUI():
         
         #String variables for input
         self.PDx_K = StringVar()
-        self.Kx = 1
+        self.Kx = PD_CF.params[0]
         self.PDx_K.set(self.Kx)
         
         self.PDx_Td = StringVar()
-        self.Tdx = 1
+        self.Tdx = PD_CF.params[1]
         self.PDx_Td.set(self.Tdx)
         
         self.PDy_K = StringVar()
-        self.Ky = 1
+        self.Ky = PD_CF.params[2]
         self.PDy_K.set(self.Ky)
         
         self.PDy_Td = StringVar()
-        self.Tdy = 1
+        self.Tdy = PD_CF.params[3]
         self.PDy_Td.set(self.Tdy)
         
         self.PDz_K = StringVar()
-        self.Kz = 11000
+        self.Kz = PD_CF.params[4]
         self.PDz_K.set(self.Kz)
         
         self.PDz_Td = StringVar()
-        self.Tdz = 1
+        self.Tdz = PD_CF.params[5]
         self.PDz_Td.set(self.Tdz)
         
         self.x_ref = StringVar()
         self.y_ref = StringVar()
         self.z_ref = StringVar()
-        self.ref = [1.00, 2.00, 3.14]
+        self.ref = [1.5, 1.5, 1.5]
         self.x_ref.set(self.ref[0])
         self.y_ref.set(self.ref[1])
         self.z_ref.set(self.ref[2])
@@ -261,6 +261,7 @@ class GUI():
         self.Kz = float(self.PDz_K.get())
         self.Tdz = float(self.PDz_Td.get())
         PD_CF.params=[self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz]
+        PD_CF.updateParams()
                 
     #Define method for GO! button
     def btnGo(self):
@@ -333,7 +334,7 @@ class GUI():
     def connectCF(self):
         cflib.crtp.init_drivers(enable_debug_driver=False)
         
-        self._lg_stab = LogConfig(name='Position', period_in_ms=100)
+        self._lg_stab = LogConfig(name='Position', period_in_ms=10)
         self._lg_stab.add_variable('kalman.stateX', 'float')
         self._lg_stab.add_variable('kalman.stateY', 'float')
         self._lg_stab.add_variable('kalman.stateZ', 'float')
@@ -353,11 +354,16 @@ class GUI():
             self._cf.connection_lost.add_callback(self._connection_lost)
             self._cf.open_link(self.link_uri)	
             print('Connecting to %s' % self.link_uri) 
-   
+    
+    
     def _connected(self, link_uri):
         print ('connected to crazyflie')
+        #self._cf.param.set_value('kalman.resetEstimation', '1')
+        #time.sleep(0.1)
+        #self._cf.param.set_value('kalman.resetEstimation', '0')
         try:
             self._cf.log.add_config(self._lg_stab)
+            
             # This callback will receive the data
             self._lg_stab.data_received_cb.add_callback(self._stab_log_data)
             # This callback will be called on errors
@@ -376,7 +382,7 @@ class GUI():
 
     def _stab_log_data(self, timestamp, data, logconf):
         """Callback froma the log API when data arrives"""
-       
+        #print([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])   
         self.regul.updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
       
 

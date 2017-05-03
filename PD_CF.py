@@ -9,14 +9,17 @@ Created on Wed Apr 5 11:13:54 2017
 
 x = 'PD'
 #K_x,K_xTd,K_y,K_yTd,K_z,K_zTd
-params = [1,1,1,1,11000,1]
+params = [0,0,0,0,50000, 0]
 oldX=0
 oldY=0
 oldZ=0
+Dx=0
+Dy=0
+Dz=0
 output= 0
 N= 10;
 Beta=1
-H = 0.05;
+H = 0.005;
 adx = params[1]/(params[1]+N*H)
 ady = params[3]/(params[3]+N*H)
 adz = params[5]/(params[5]+N*H) 
@@ -36,25 +39,36 @@ def calcOutput(pos, ref):
     errorarray[0] = ref[0] - pos[0]
     errorarray[1] = ref[1] - pos[1]
     errorarray[2] = ref[2] - pos[2]
-    params[1] = adx*params[1]-bdx*(pos[0]-oldX)
-    params[3] = ady*params[3]-bdy*(pos[1]-oldY)
-    params[5] = adz*params[5]-bdz*(pos[2]-oldZ)
-    outputRoll = params[0]*(Beta*errorarray[0])+params[1]
-    outputPitch = params[2]*(Beta*errorarray[1])+params[3]
-    outputThrust = params[4]*(Beta*errorarray[2])+params[5]
+#    Dx = adx*Dx-bdx*(pos[0]-oldX)
+#    Dy = ady*Dy-bdy*(pos[1]-oldY)
+#    Dz = adz*Dz-bdz*(pos[2]-oldZ)
+    outputRoll = params[0]*(Beta*errorarray[0])#+Dx
+    outputPitch = params[2]*(Beta*errorarray[1])#+Dy
+    outputThrust = params[4]*(Beta*errorarray[2])#+Dz
     if outputThrust > (0xFFFF-1):
         outputThrust = 65530
+    elif (outputThrust < 10000):
+         print ("error: ",  outputThrust)
+         outputThrust = 10001
     if outputPitch > (0xFFFF-1):
         outputPitch = 65530
     if outputRoll > (0xFFFF-1):
         outputRoll = 65530
+    #print (outputRoll,  outputPitch,  outputThrust)
+    #print(pos)
     return outputRoll,outputPitch,outputThrust
 
 #update state after calculating (maybe not neccesary??)
-def updateState(x,y,z):
-    oldX=x
-    oldY=y
-    oldZ=z
+def updateState(pos):
+    oldX=pos[0]
+    oldY=pos[1]
+    oldZ=pos[2]
 
-
+def updateParams():
+    adx = params[1]/(params[1]+N*H)
+    ady = params[3]/(params[3]+N*H)
+    adz = params[5]/(params[5]+N*H) 
+    bdx = params[0]*adx*N
+    bdy = params[2]*ady*N   
+    bdz = params[4]*adz*N
     
