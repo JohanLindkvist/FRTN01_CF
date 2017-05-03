@@ -183,7 +183,10 @@ class GUI():
         #Add plot to window for Z-axis 
         self.f3 = Figure(figsize=(10,3), dpi=50)
         self.a3 = self.f3.add_subplot(111)
-        self.a3.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        
+        self.ytry=0
+        self.xtry=0
+        self.line3 , =self.a3.plot(self.xtry, self.ytry, 'b-')
         self.canvas3 = FigureCanvasTkAgg(self.f3, self.ZplotFrame)
         self.canvas3.show()
         self.canvas3.get_tk_widget().pack(side=TOP, expand=True)
@@ -197,24 +200,19 @@ class GUI():
         self.f3D = Figure(figsize=(12,6), dpi=50)
         self.a3D = self.f3D.gca(projection='3d')
         self.f3D.subplots_adjust(left=0, bottom=0, right=1, top=1)
-
-        # Fake data.
-        self.X = np.arange(-5, 5, 0.25)
-        self.Y = np.arange(-5, 5, 0.25)
-        self.X, self.Y = np.meshgrid(self.X, self.Y)
-        self.R = np.sqrt(self.X**2 + self.Y**2)
-        self.Z = np.sin(self.R)
-
-
-        self.surf = self.a3D.plot_surface(self.X, self.Y, self.Z, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-
-        # Customize the z axis.
-        self.a3D.set_zlim(-1.01, 1.01)
-        self.a3D.zaxis.set_major_locator(LinearLocator(10))
+    
+        # Customize axis.
+        self.axLen=3
+        self.a3D.set_zlim(0, self.axLen)
+        self.a3D.set_xlim(0, self.axLen)
+        self.a3D.set_ylim(0, self.axLen)
         self.a3D.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+        
+        
+        #self.a3D.plot([1.], [1.], [1.], markerfacecolor='k', markeredgecolor='k', marker='o', markersize=5, alpha=0.6)
 
         # Add a color bar which maps values to colors.
-        self.f3D.colorbar(self.surf, shrink=0.5, aspect=5)
+        #self.f3D.colorbar(self.surf, shrink=0.5, aspect=5)
         
         self.canvas3D = FigureCanvasTkAgg(self.f3D, self.DplotFrame)
         self.canvas3D.show()
@@ -250,7 +248,7 @@ class GUI():
         self.helpmenu = Menu(self.menu)
         self.menu.add_cascade(label="Help", menu=self.helpmenu)
         self.helpmenu.add_command(label="About...", command=self.About)
-        
+        self.x=1.0
 
      #Define method for apply button (Not real method)
     def btnApply(self):
@@ -271,7 +269,29 @@ class GUI():
         self.ref[1] = float(self.y_ref.get())
         self.ref[2] = float(self.z_ref.get()) 
         self.regul.setReference(self.ref)
+
+    def updateGraph(self, X, Y, Z):
+        self.a3D.clear()
+        self.a3D.set_zlim(0, self.axLen)
+        self.a3D.set_xlim(0, self.axLen)
+        self.a3D.set_ylim(0, self.axLen)
+        self.a3D.plot([X], [Y], [Z], markerfacecolor='b', markeredgecolor='b', marker='o', markersize=5, alpha=0.6)
+        self.a3D.plot([self.ref[0]], [self.ref[1]], [self.ref[2]], markerfacecolor='r', markeredgecolor='r', marker='o', markersize=5, alpha=0.6)
+        self.canvas3D.show()
+        
     
+    
+        self.line3.set_xdata(np.append(self.line3.get_xdata(), self.xtry))
+        self.line3.set_ydata(np.append(self.line3.get_ydata(), self.ytry))
+        self.a3.relim()
+        # update ax.viewLim using the new dataLim
+        self.a3.autoscale_view()
+        
+        self.canvas3.show()
+        
+        
+        
+        
     #Defines method for Home button
     def btnHome(self):
         #print ("Home")
@@ -286,6 +306,7 @@ class GUI():
     #Defines method for Land button
     def btnLand(self):
         #TODO implement method
+        self.updateGraph(1.0, 1.0, 1.0)
         print ("Land")
     
     #Defines method for Stop button
@@ -382,10 +403,10 @@ class GUI():
 
     def _stab_log_data(self, timestamp, data, logconf):
         """Callback froma the log API when data arrives"""
-        #print([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])   
+        
         self.regul.updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
-      
-
+       
+        
 class GUI_Thread(threading.Thread):
     
     def __init__(self, threadID, name, regul,_cf):
