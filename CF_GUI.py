@@ -154,10 +154,18 @@ class GUI():
         self.z_Td_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDz_Td, bd = 10, bg = "powder blue", justify = 'right', width = 5)
         self.z_Td_entry.grid(row = 3, column = 8)
                 
+        
+        #Plot Parameters
+        self.dataLen = 200 #This is the length of the line in the number of datapoints
+        self.dTime=0
+        
+        
         #Add plot to window for X-axis 
         self.f1 = Figure(figsize=(10,3), dpi=50)
         self.a1 = self.f1.add_subplot(111)
-        self.a1.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        self.dX=0
+        self.line1 , =self.a1.plot(self.dX, self.dTime, 'b-')
+        self.line1ref , =self.a1.plot(self.ref[0], self.dTime, 'r-')
         self.canvas1 = FigureCanvasTkAgg(self.f1, self.XplotFrame)
         self.canvas1.show()
         self.canvas1.get_tk_widget().pack(side=TOP, expand=True)
@@ -166,11 +174,14 @@ class GUI():
         self.canvas1._tkcanvas.pack(side=TOP, expand=True)
         self.f1.subplots_adjust(left=0.05,right=0.95)
         self.a1.set_title('X-values')
-       
+        self.a1.set_ylim([0,3.5])
+        
         #Add plot to window for Y-axis 
         self.f2 = Figure(figsize=(10,3), dpi=50)
         self.a2 = self.f2.add_subplot(111)
-        self.a2.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        self.dY=0
+        self.line2 , =self.a2.plot(self.dY, self.dTime, 'b-')
+        self.line2ref , =self.a2.plot(self.ref[1], self.dTime, 'r-')
         self.canvas2 = FigureCanvasTkAgg(self.f2, self.YplotFrame)
         self.canvas2.show()
         self.canvas2.get_tk_widget().pack(side=TOP, expand=True)
@@ -179,14 +190,15 @@ class GUI():
         self.canvas2._tkcanvas.pack(side=TOP,fill=BOTH, expand=True)
         self.f2.subplots_adjust(left=0.05,right=0.95)
         self.a2.set_title('Y-values')
+        self.a2.set_ylim([0,3.5])
+        
         
         #Add plot to window for Z-axis 
         self.f3 = Figure(figsize=(10,3), dpi=50)
         self.a3 = self.f3.add_subplot(111)
-        
-        self.ytry=0
-        self.xtry=0
-        self.line3 , =self.a3.plot(self.xtry, self.ytry, 'b-')
+        self.dZ=0
+        self.line3 , =self.a3.plot(self.dZ, self.dTime, 'b-')
+        self.line3ref , =self.a3.plot(self.ref[2], self.dTime, 'r-')
         self.canvas3 = FigureCanvasTkAgg(self.f3, self.ZplotFrame)
         self.canvas3.show()
         self.canvas3.get_tk_widget().pack(side=TOP, expand=True)
@@ -195,8 +207,14 @@ class GUI():
         self.canvas3._tkcanvas.pack(side=TOP, expand=True)
         self.f3.subplots_adjust(left=0.05,right=0.95)
         self.a3.set_title('Z-values')
+        self.a3.set_ylim([0,3.5])
+        
+        self.t0 = int(time.time())
+        
         
         #Add plot to window in 3D
+        self.lastTime=time.time()
+        
         self.f3D = Figure(figsize=(12,6), dpi=50)
         self.a3D = self.f3D.gca(projection='3d')
         self.f3D.subplots_adjust(left=0, bottom=0, right=1, top=1)
@@ -271,24 +289,52 @@ class GUI():
         self.regul.setReference(self.ref)
 
     def updateGraph(self, X, Y, Z):
-        self.a3D.clear()
-        self.a3D.set_zlim(0, self.axLen)
-        self.a3D.set_xlim(0, self.axLen)
-        self.a3D.set_ylim(0, self.axLen)
-        self.a3D.plot([X], [Y], [Z], markerfacecolor='b', markeredgecolor='b', marker='o', markersize=5, alpha=0.6)
-        self.a3D.plot([self.ref[0]], [self.ref[1]], [self.ref[2]], markerfacecolor='r', markeredgecolor='r', marker='o', markersize=5, alpha=0.6)
-        self.canvas3D.show()
         
-    
-    
-        self.line3.set_xdata(np.append(self.line3.get_xdata(), self.xtry))
-        self.line3.set_ydata(np.append(self.line3.get_ydata(), self.ytry))
-        self.a3.relim()
-        # update ax.viewLim using the new dataLim
-        self.a3.autoscale_view()
         
+        self.curTime= time.time()
+        self.dTime = (self.curTime-self.t0)
+        
+        if((self.curTime-1)>self.lastTime): #Updates the 3D-Graph once per second
+            self.a3D.clear()
+            self.a3D.set_zlim(0, self.axLen)
+            self.a3D.set_xlim(0, self.axLen)
+            self.a3D.set_ylim(0, self.axLen)
+            self.a3D.plot([X], [Y], [Z], markerfacecolor='b', markeredgecolor='b', marker='o', markersize=5, alpha=0.6)
+            self.a3D.plot([self.ref[0]], [self.ref[1]], [self.ref[2]], markerfacecolor='r', markeredgecolor='r', marker='o', markersize=5, alpha=0.6)
+            self.lastTime = self.curTime
+            self.canvas3D.show()
+        
+        #2D Graphs
+        self.dX = 1.0
+        self.line1.set_xdata(np.append(self.line1.get_xdata()[len(self.line1.get_xdata())-self.dataLen:], self.dTime))
+        self.line1.set_ydata(np.append(self.line1.get_ydata()[len(self.line1.get_ydata())-self.dataLen:], self.dX))
+        self.line1ref.set_xdata(np.append(self.line1ref.get_xdata()[len(self.line1ref.get_xdata())-self.dataLen:], self.dTime))
+        self.line1ref.set_ydata(np.append(self.line1ref.get_ydata()[len(self.line1ref.get_ydata())-self.dataLen:], self.ref[0]))
+        self.a1.set_xlim([self.dTime-10,self.dTime])
+        
+        self.dY = 1.0
+        self.line2.set_xdata(np.append(self.line2.get_xdata()[len(self.line2.get_xdata())-self.dataLen:], self.dTime))
+        self.line2.set_ydata(np.append(self.line2.get_ydata()[len(self.line2.get_ydata())-self.dataLen:], self.dY))
+        self.line2ref.set_xdata(np.append(self.line2ref.get_xdata()[len(self.line2ref.get_xdata())-self.dataLen:], self.dTime))
+        self.line2ref.set_ydata(np.append(self.line2ref.get_ydata()[len(self.line2ref.get_ydata())-self.dataLen:], self.ref[1]))
+        self.a2.set_xlim([self.dTime-10,self.dTime])
+       
+        
+        
+        self.dZ = 1.0
+        self.line3.set_xdata(np.append(self.line3.get_xdata()[len(self.line3.get_xdata())-self.dataLen:], self.dTime))
+        self.line3.set_ydata(np.append(self.line3.get_ydata()[len(self.line3.get_ydata())-self.dataLen:], self.dZ))
+        self.line3ref.set_xdata(np.append(self.line3ref.get_xdata()[len(self.line3ref.get_xdata())-self.dataLen:], self.dTime))
+        self.line3ref.set_ydata(np.append(self.line3ref.get_ydata()[len(self.line3ref.get_ydata())-self.dataLen:], self.ref[2]))                
+        self.a3.set_xlim([self.dTime-10,self.dTime])
+        
+        
+        self.canvas1.show()
+        self.canvas2.show()
         self.canvas3.show()
         
+        
+        print((time.time()-self.curTime))
         
         
         
@@ -403,9 +449,8 @@ class GUI():
 
     def _stab_log_data(self, timestamp, data, logconf):
         """Callback froma the log API when data arrives"""
-        
         self.regul.updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
-       
+        self.updateGraph(float(data['kalman.stateX']), float(data['kalman.stateY']), float(data['kalman.stateZ']))
         
 class GUI_Thread(threading.Thread):
     
