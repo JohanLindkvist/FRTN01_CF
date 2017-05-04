@@ -73,4 +73,3 @@ def updateParams():
     bdx = params[0]*adx*N
     bdy = params[2]*ady*N   
     bdz = params[4]*adz*N
-    
