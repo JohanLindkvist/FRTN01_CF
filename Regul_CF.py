@@ -4,7 +4,7 @@ import threading
 import PD_CF
 import cflib
 from cflib.crazyflie import Crazyflie
-
+from Tkinter import END
 from cflib.crazyflie.log import LogConfig
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
 from cflib.crazyflie.syncLogger import SyncLogger
@@ -91,16 +91,25 @@ class Regul_CF(threading.Thread):
     def _connection_failed(self,link_uri, msg):
         """Callback when connection initial connection fails (i.e no Crazyflie
         at the specified address)"""
-        print('Connection to %s failed: %s' % (link_uri, msg))
+        self.GUI.T.delete('1.0',  END)
+        temp = 'Connection to ' + link_uri  +' failed: ' + msg
+        self.GUI.T.insert(END,  temp)
+        #print('Connection to %s failed: %s' + (link_uri, msg))
 
     def _connection_lost(self,link_uri, msg):
         """Callback when disconnected after a connection has been made (i.e
         Crazyflie moves out of range)"""
-        print('Connection to %s lost: %s' % (link_uri, msg))
+        self.GUI.T.delete('1.0',  END)
+        temp = 'Connection to ' +  link_uri + ' lost: ' +  msg
+        self.GUI.T.insert(END,  temp)
+        #print('Connection to %s lost: %s' % (link_uri, msg))
 
     def _disconnected(self,link_uri):
         """Callback when the Crazyflie is disconnected (called in all cases)"""
-        print('Disconnected from %s' % link_uri)
+        self.GUI.T.delete('1.0',  END)
+        temp = 'Disconnected from ' + link_uri
+        self.GUI.T.insert(END,  temp)
+        #print('Disconnected from %s' % link_uri)
     
     def _connected(self, link_uri):
         """ This callback is called form the Crazyflie API when a Crazyflie
@@ -119,11 +128,18 @@ class Regul_CF(threading.Thread):
         self._lg_stab.add_variable('kalman.stateZ', 'float')
         
         #Scan for Crazyflies and use the first one found
-        print('Looking for Crazyflie')
+        self.GUI.T.delete('1.0',  END)
+        temp = 'Looking for Crazyflie'
+        self.GUI.T.insert(END,  temp)
+        #print('Looking for Crazyflie')
         self.available = cflib.crtp.scan_interfaces()
-        print('Crazyflies found:')
+        self.GUI.T.delete('1.0',  END)
+        temp = 'Crazyflies found'
+        self.GUI.T.insert(END,  temp)
+        #print('Crazyflies found:')
         for i in self.available:
-            print(i[0])
+            self.GUI.T.insert(END,  i[0])
+            #print(i[0])
 
         if len(self.available) > 0:    
             self.link_uri=self.available[0][0]
@@ -133,14 +149,20 @@ class Regul_CF(threading.Thread):
             self._cf.connection_lost.add_callback(self._connection_lost)
             self._cf.open_link(self.link_uri)	
             self.IsConnected = True
-            print('Connecting to %s' % self.link_uri) 
+            self.GUI.T.delete('1.0',  END)
+            temp = 'Connecting to ' +  self.link_uri
+            self.GUI.T.insert(END,  temp)
+            #print('Connecting to %s' % self.link_uri) 
             
     def IsConnected(self):
         return self.IsConnected
         
     
     def _connected(self, link_uri):
-        print ('connected to crazyflie')
+        self.GUI.T.delete('1.0',  END)
+        temp = 'connected to Crazyflie'
+        self.GUI.T.insert(END,  temp)
+        #print ('connected to crazyflie')
         #self._cf.param.set_value('kalman.resetEstimation', '1')
         #time.sleep(0.1)
         #self._cf.param.set_value('kalman.resetEstimation', '0')

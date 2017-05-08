@@ -291,6 +291,8 @@ class GUI():
         self.Land = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Land", bg="powder blue",command =self.btnLand, width = 7).grid(row=2, column = 2)
         self.Stop = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Stop", bg="powder blue",command =self.btnStop, width = 7).grid(row=2, column = 3)
         self.Quit = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Quit", bg="powder blue",command =self.btnQuit, width = 18).grid(row=3, column = 2, columnspan = 2)
+        self.T = Text(self.paramFrame,  padx = 10,  height = 3,  width = 26,  wrap = 'word')
+        self.T.grid(row = 4,  column = 1,  columnspan = 3)
         
         #Drop down menu File and Help    
         self.menu = Menu(root)
