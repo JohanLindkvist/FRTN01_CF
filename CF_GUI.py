@@ -105,7 +105,7 @@ class GUI():
         self.y_ref.set(self.ref[1])
         self.z_ref.set(self.ref[2])
         self.pos = []
-        self.pos.trace(mode="w", callback=self.updateGraph(self.pos))
+        #self.pos.trace(mode="w", callback=self.updateGraph(self.pos))
         
         #Input fields for pos ref
         self.ref_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "Reference position", bd = 10, anchor = 'w')
@@ -274,7 +274,7 @@ class GUI():
         self.a3D.mouse_init()   
         self.canvas3D.show()
         self.canvas3D.get_tk_widget().pack(side=TOP, expand=True)
-        self.toolbar3D = NaviPosgationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
+        self.toolbar3D = NavigationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
         self.toolbar3D.update()
         self.canvas3D._tkcanvas.pack(side=TOP, expand=True)
         self.a3D.set_title('Fight Path in 3D')
@@ -328,8 +328,6 @@ class GUI():
         self.regul.setReference(self.ref)
 
     def updateGraph(self, X, Y, Z):
-        
-        
         self.curTime= time.time()
         self.dTime = (self.curTime-self.t0)
         
@@ -358,8 +356,6 @@ class GUI():
         self.line2ref.set_ydata(np.append(self.line2ref.get_ydata()[len(self.line2ref.get_ydata())-self.dataLen:], self.ref[1]))
         self.a2.set_xlim([self.dTime-10,self.dTime])
        
-        
-        
         self.dZ =self.regul.pos[2]
         self.line3.set_xdata(np.append(self.line3.get_xdata()[len(self.line3.get_xdata())-self.dataLen:], self.dTime))
         self.line3.set_ydata(np.append(self.line3.get_ydata()[len(self.line3.get_ydata())-self.dataLen:], self.dZ))
@@ -367,17 +363,13 @@ class GUI():
         self.line3ref.set_ydata(np.append(self.line3ref.get_ydata()[len(self.line3ref.get_ydata())-self.dataLen:], self.ref[2]))                
         self.a3.set_xlim([self.dTime-10,self.dTime])
         
-        
         self.canvas1.show()
         self.canvas2.show()
         self.canvas3.show()
-        
-        
+        self.root.after(3000, self.updateGraph(self.regul.pos[0], self.regul.pos[1], self.regul.pos[2]))
         #print((time.time()-self.curTime))
         
-        
-        
-    #Defines method for Home button
+        #Defines method for Home button
     def btnHome(self):
         print ("Home")
         self.ref= Homepos
@@ -407,6 +399,8 @@ class GUI():
         self.root.destroy()
     #Drop down menu
     
+    def connectCF(self):
+        self.regul.connectCF()
         
     def Disconnect(self):
         #LowPrio ToDo
@@ -415,89 +409,7 @@ class GUI():
     def About(self):
         self.messageBox.showinfo("About", "CrazyFlie dude!")
     
-    
-    
 
-    def _connection_failed(self,link_uri, msg):
-        """Callback when connection initial connection fails (i.e no Crazyflie
-        at the specified address)"""
-        print('Connection to %s failed: %s' % (link_uri, msg))
-
-    def _connection_lost(self,link_uri, msg):
-        """Callback when disconnected after a connection has been made (i.e
-        Crazyflie moves out of range)"""
-        print('Connection to %s lost: %s' % (link_uri, msg))
-
-    def _disconnected(self,link_uri):
-        """Callback when the Crazyflie is disconnected (called in all cases)"""
-        print('Disconnected from %s' % link_uri)
-    
-    def _connected(self, link_uri):
-        """ This callback is called form the Crazyflie API when a Crazyflie
-        has been connected and the TOCs have been downloaded."""
-
-        # Start a separate thread to do the motor test.
-        # Do not hijack the calling thread!
-        #Thread(target=_ramp_motors).start()
-    
-    def connectCF(self):
-        cflib.crtp.init_drivers(enable_debug_driver=False)
-        
-        self._lg_stab = LogConfig(name='Position', period_in_ms=100)
-        self._lg_stab.add_variable('kalman.stateX', 'float')
-        self._lg_stab.add_variable('kalman.stateY', 'float')
-        self._lg_stab.add_variable('kalman.stateZ', 'float')
-        
-        #Scan for Crazyflies and use the first one found
-        print('Looking for Crazyflie')
-        self.available = cflib.crtp.scan_interfaces()
-        print('Crazyflies found:')
-        for i in self.available:
-            print(i[0])
-		    
-        if len(self.available) > 0:    
-            self.link_uri=self.available[0][0]
-            self._cf.connected.add_callback(self._connected)
-            self._cf.disconnected.add_callback(self._disconnected)
-            self._cf.connection_failed.add_callback(self._connection_failed)
-            self._cf.connection_lost.add_callback(self._connection_lost)
-            self._cf.open_link(self.link_uri)	
-            print('Connecting to %s' % self.link_uri) 
-    
-    
-    def _connected(self, link_uri):
-        print ('connected to crazyflie')
-        #self._cf.param.set_value('kalman.resetEstimation', '1')
-        #time.sleep(0.1)
-        #self._cf.param.set_value('kalman.resetEstimation', '0')
-        try:
-            self._cf.log.add_config(self._lg_stab)
-            
-            # This callback will receive the data
-            self._lg_stab.data_received_cb.add_callback(self._stab_log_data)
-            # This callback will be called on errors
-            self._lg_stab.error_cb.add_callback(self._stab_log_error)
-            # Start the logging
-            self._lg_stab.start()
-        except KeyError as e:
-            print('Could not start log configuration,'
-                  '{} not found in TOC'.format(str(e)))
-        except AttributeError:
-            print('Could not add Stabilizer log config, bad configuration.')
-
-    def _stab_log_error(self, logconf, msg):
-        """Callback from the log API when an error occurs"""
-        print('Error when logging %s: %s' % (logconf.name, msg))
-
-    
-
-    def _stab_log_data(self, timestamp, data, logconf):
-        """Callback froma the log API when data arrives"""
-        #print([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
-        self.regul.updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
-        self.pos = [data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']]
-        #self.updateGraph(float(data['kalman.stateX']), float(data['kalman.stateY']), float(data['kalman.stateZ']))
-        
 class GUI_Thread(threading.Thread):
     
     def __init__(self, threadID, name, regul,_cf):
@@ -505,12 +417,12 @@ class GUI_Thread(threading.Thread):
        
         self.root = Tk()
         self.gui = GUI(self.root, regul,_cf)
-        
+        self.gui.regul.setGUI(self.gui)
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name
-        self.root.mainloop()
-        
+        self.gui.updateGraph(self.gui.regul.pos[0], self.gui.regul.pos[1], self.gui.regul.pos[2])
+        self.gui.root.mainloop()
     def run(self): 
         print("Closed GUI")
 

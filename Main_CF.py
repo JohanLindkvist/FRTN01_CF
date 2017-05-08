@@ -18,6 +18,7 @@ if __name__ == "__main__":
 	#monitor.start()
     regul.start()
     GUI = CF_GUI.GUI_Thread(2, "GUI Tread",regul,_cf)
+    
     regul.destroy()
 	#monitor.destroy()
 		  
