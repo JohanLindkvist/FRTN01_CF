@@ -320,12 +320,13 @@ class GUI():
                 
     #Define method for GO! button
     def btnGo(self):
-        self.regul.Go()
-        print ("GO")
-        self.ref[0] = float(self.x_ref.get())
-        self.ref[1] = float(self.y_ref.get())
-        self.ref[2] = float(self.z_ref.get()) 
-        self.regul.setReference(self.ref)
+        if(self.regul.IsConnected==True):
+            self.regul.Go()
+            print ("GO")
+            self.ref[0] = float(self.x_ref.get())
+            self.ref[1] = float(self.y_ref.get())
+            self.ref[2] = float(self.z_ref.get()) 
+            self.regul.setReference(self.ref)
 
     def updateGraph(self):
         
@@ -374,19 +375,21 @@ class GUI():
         
         #Defines method for Home button
     def btnHome(self):
-        print ("Home")
-        self.ref= Homepos
-        self.x_ref.set(self.ref[0])
-        self.y_ref.set(self.ref[1])
-        self.z_ref.set(self.ref[2])
-        self.regul.setReference(self.ref)
-        #print(self.regul.getPos())
+        if(self.regul.IsConnected==True):
+            print ("Home")
+            self.ref= Homepos
+            self.x_ref.set(self.ref[0])
+            self.y_ref.set(self.ref[1])
+            self.z_ref.set(self.ref[2])
+            self.regul.setReference(self.ref)
+            #print(self.regul.getPos())
     
     #Defines method for Land button
     def btnLand(self):
-        print ("Land")
-        self.regul.Land()
-        self.z_ref.set(0)
+        if(self.regul.IsConnected==True):   
+            print ("Land")
+            self.regul.Land()
+            self.z_ref.set(0)
 #        self.ref= [2.3, 0.2, 0.8]
 #        self.z_ref.set(self.ref[2])
 #        self.regul.setReference(self.ref)
@@ -394,8 +397,9 @@ class GUI():
     
     #Defines method for Stop button
     def btnStop(self):
-        self.regul.stop()
-        print ("Stopped")
+        if(self.regul.IsConnected==True):
+            self.regul.stop()
+            print ("Stopped")
 
     def btnQuit(self):
         self.regul.destroy()
@@ -403,7 +407,9 @@ class GUI():
     #Drop down menu
     
     def connectCF(self):
-        self.regul.connectCF()
+        if(self.regul.IsConnected==False):
+            self.regul.connectCF()
+        
         
     def Disconnect(self):
         #LowPrio ToDo
