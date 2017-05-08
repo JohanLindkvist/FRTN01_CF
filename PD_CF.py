@@ -9,7 +9,7 @@ Created on Wed Apr 5 11:13:54 2017
 
 x = 'PD'
 #K_x,K_xTd,K_y,K_yTd,K_z,K_zTd
-params = [6,1.1,6,1.1,8500, 0.9]
+params = [11,1.1,11, 1.1,10000, 1.4]
 oldX=0
 oldY=0
 oldZ=0
@@ -28,7 +28,7 @@ bdy = params[2]*ady*N
 bdz = params[4]*adz*N
 errorarray=[0,0,0]
 I = 4
-ZTi=115
+ZTi=300
    
 # retrieve parameters
 #def getParam():
@@ -47,13 +47,13 @@ def calcOutput(pos, ref):
     outputRoll = params[2]*(Beta*errorarray[1])+Dy
     outputThrust = params[4]*(Beta*errorarray[2]+I)+ Dz
     if outputThrust > (65001):
-        print ("Thrust to High: ",  outputThrust)
+        print ('Thrust to High: ',  outputThrust)
         outputThrust = 65000
     elif (outputThrust < 35000):
-         print ("Thrust to low: ",  outputThrust)
+         print ('Thrust to low: ',  outputThrust)
          outputThrust = 35001
     if outputPitch > (11):
-        print ("Pitch to High: ",  outputPitch)
+        print ('Pitch to High: ',  outputPitch)
         outputPitch = 10
     elif (outputPitch < -11):
         print ("Pitch to low: ",  outputPitch)

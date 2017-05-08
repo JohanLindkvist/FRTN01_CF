@@ -30,7 +30,6 @@ class Regul_CF(threading.Thread):
         self.go = False
         self.land = False
         self.output = []
-        self.landOutput = []
         self.t0 = int(time.time())
         
         
@@ -39,19 +38,22 @@ class Regul_CF(threading.Thread):
         self.run=True
         
         while(self.run):
+            #curTime= time.time()
+            #dTime = (curTime-self.t0)
             if(self.go):
                 #self.pos = _cf.getPos(TODO)  //Activate when Ankare
                 self.output = PD_CF.calcOutput(self.pos,self.ref)
                 self._cf.commander.send_setpoint(self.output[0],self.output[1],0,self.output[2])
                 PD_CF.updateState(self.pos)
-                self.landOutput = self.output
             elif(self.land):
-                self.landOutput = [self.landOutput[0], self.landOutput[1],  self.landOutput[2]*0.9999]
-                self._cf.commander.send_setpoint(self.landOutput[0],self.landOutput[1],0,self.landOutput[2])
+                self.ref = [self.ref[0], self.ref[1],  self.ref[2]*0.95]
+                self.output = PD_CF.calcOutput(self.pos,self.ref)
+                self._cf.commander.send_setpoint(self.output[0],self.output[1],0,self.output[2])
                 PD_CF.updateState(self.pos)
             else:
                 self._cf.commander.send_setpoint(0,0,0,0)
             time.sleep(0.033)
+            #print((time.time()-curTime))
         self._cf.commander.send_setpoint(0, 0, 0, 0)
         # Make sure that the last packet leaves before the link is closed
         # since the message queue is not flushed before closing
@@ -160,7 +162,7 @@ class Regul_CF(threading.Thread):
     
     def _connected(self, link_uri):
         self.GUI.T.delete('1.0',  END)
-        temp = 'connected to Crazyflie'
+        temp = 'Connected to Crazyflie'
         self.GUI.T.insert(END,  temp)
         #print ('connected to crazyflie')
         #self._cf.param.set_value('kalman.resetEstimation', '1')
