@@ -17,8 +17,11 @@ logging.basicConfig(level=logging.ERROR)
 
 class Regul_CF(threading.Thread):
     
+    
+    
     def __init__(self, threadID, name, _cf):
         threading.Thread.__init__(self)
+        self.IsConnected = False
         self.threadID = threadID
         self.name = name
         self.ref=[0,0,0]
@@ -129,8 +132,12 @@ class Regul_CF(threading.Thread):
             self._cf.connection_failed.add_callback(self._connection_failed)
             self._cf.connection_lost.add_callback(self._connection_lost)
             self._cf.open_link(self.link_uri)	
+            self.IsConnected = True
             print('Connecting to %s' % self.link_uri) 
-    
+            
+    def IsConnected(self):
+        return self.IsConnected
+        
     
     def _connected(self, link_uri):
         print ('connected to crazyflie')

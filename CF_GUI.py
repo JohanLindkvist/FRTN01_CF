@@ -327,46 +327,49 @@ class GUI():
         self.ref[2] = float(self.z_ref.get()) 
         self.regul.setReference(self.ref)
 
-    def updateGraph(self, X, Y, Z):
-        self.curTime= time.time()
-        self.dTime = (self.curTime-self.t0)
+    def updateGraph(self):
         
-        if((self.curTime-1)>self.lastTime): #Updates the 3D-Graph once per second
-            self.a3D.clear()
-            self.a3D.set_zlim(0, self.axLen)
-            self.a3D.set_xlim(0, self.axLen)
-            self.a3D.set_ylim(0, self.axLen)
-            self.a3D.plot([X], [Y], [Z], markerfacecolor='b', markeredgecolor='b', marker='o', markersize=5, alpha=0.6)
-            self.a3D.plot([self.ref[0]], [self.ref[1]], [self.ref[2]], markerfacecolor='r', markeredgecolor='r', marker='o', markersize=5, alpha=0.6)
-            self.lastTime = self.curTime
-            self.canvas3D.show()
+        if(self.regul.IsConnected==True):
+            self.curTime= time.time()
+            self.dTime = (self.curTime-self.t0)
+            
+            if((self.curTime-1)>self.lastTime): #Updates the 3D-Graph once per second
+                self.a3D.clear()
+                self.a3D.set_zlim(0, self.axLen)
+                self.a3D.set_xlim(0, self.axLen)
+                self.a3D.set_ylim(0, self.axLen)
+                self.a3D.plot([self.reguil.pos[0]], [self.reguil.pos[1]], [self.reguil.pos[2]], markerfacecolor='b', markeredgecolor='b', marker='o', markersize=5, alpha=0.6)
+                self.a3D.plot([self.ref[0]], [self.ref[1]], [self.ref[2]], markerfacecolor='r', markeredgecolor='r', marker='o', markersize=5, alpha=0.6)
+                self.lastTime = self.curTime
+                self.canvas3D.show()
+            
+            #2D Graphs
+            self.dX = self.regul.pos[0]
+            self.line1.set_xdata(np.append(self.line1.get_xdata()[len(self.line1.get_xdata())-self.dataLen:], self.dTime))
+            self.line1.set_ydata(np.append(self.line1.get_ydata()[len(self.line1.get_ydata())-self.dataLen:], self.dX))
+            self.line1ref.set_xdata(np.append(self.line1ref.get_xdata()[len(self.line1ref.get_xdata())-self.dataLen:], self.dTime))
+            self.line1ref.set_ydata(np.append(self.line1ref.get_ydata()[len(self.line1ref.get_ydata())-self.dataLen:], self.ref[0]))
+            self.a1.set_xlim([self.dTime-10,self.dTime])
+            
+            self.dY = self.regul.pos[1]
+            self.line2.set_xdata(np.append(self.line2.get_xdata()[len(self.line2.get_xdata())-self.dataLen:], self.dTime))
+            self.line2.set_ydata(np.append(self.line2.get_ydata()[len(self.line2.get_ydata())-self.dataLen:], self.dY))
+            self.line2ref.set_xdata(np.append(self.line2ref.get_xdata()[len(self.line2ref.get_xdata())-self.dataLen:], self.dTime))
+            self.line2ref.set_ydata(np.append(self.line2ref.get_ydata()[len(self.line2ref.get_ydata())-self.dataLen:], self.ref[1]))
+            self.a2.set_xlim([self.dTime-10,self.dTime])
+           
+            self.dZ =self.regul.pos[2]
+            self.line3.set_xdata(np.append(self.line3.get_xdata()[len(self.line3.get_xdata())-self.dataLen:], self.dTime))
+            self.line3.set_ydata(np.append(self.line3.get_ydata()[len(self.line3.get_ydata())-self.dataLen:], self.dZ))
+            self.line3ref.set_xdata(np.append(self.line3ref.get_xdata()[len(self.line3ref.get_xdata())-self.dataLen:], self.dTime))
+            self.line3ref.set_ydata(np.append(self.line3ref.get_ydata()[len(self.line3ref.get_ydata())-self.dataLen:], self.ref[2]))                
+            self.a3.set_xlim([self.dTime-10,self.dTime])
+            
+            self.canvas1.show()
+            self.canvas2.show()
+            self.canvas3.show()
         
-        #2D Graphs
-        self.dX = self.regul.pos[0]
-        self.line1.set_xdata(np.append(self.line1.get_xdata()[len(self.line1.get_xdata())-self.dataLen:], self.dTime))
-        self.line1.set_ydata(np.append(self.line1.get_ydata()[len(self.line1.get_ydata())-self.dataLen:], self.dX))
-        self.line1ref.set_xdata(np.append(self.line1ref.get_xdata()[len(self.line1ref.get_xdata())-self.dataLen:], self.dTime))
-        self.line1ref.set_ydata(np.append(self.line1ref.get_ydata()[len(self.line1ref.get_ydata())-self.dataLen:], self.ref[0]))
-        self.a1.set_xlim([self.dTime-10,self.dTime])
-        
-        self.dY = self.regul.pos[1]
-        self.line2.set_xdata(np.append(self.line2.get_xdata()[len(self.line2.get_xdata())-self.dataLen:], self.dTime))
-        self.line2.set_ydata(np.append(self.line2.get_ydata()[len(self.line2.get_ydata())-self.dataLen:], self.dY))
-        self.line2ref.set_xdata(np.append(self.line2ref.get_xdata()[len(self.line2ref.get_xdata())-self.dataLen:], self.dTime))
-        self.line2ref.set_ydata(np.append(self.line2ref.get_ydata()[len(self.line2ref.get_ydata())-self.dataLen:], self.ref[1]))
-        self.a2.set_xlim([self.dTime-10,self.dTime])
-       
-        self.dZ =self.regul.pos[2]
-        self.line3.set_xdata(np.append(self.line3.get_xdata()[len(self.line3.get_xdata())-self.dataLen:], self.dTime))
-        self.line3.set_ydata(np.append(self.line3.get_ydata()[len(self.line3.get_ydata())-self.dataLen:], self.dZ))
-        self.line3ref.set_xdata(np.append(self.line3ref.get_xdata()[len(self.line3ref.get_xdata())-self.dataLen:], self.dTime))
-        self.line3ref.set_ydata(np.append(self.line3ref.get_ydata()[len(self.line3ref.get_ydata())-self.dataLen:], self.ref[2]))                
-        self.a3.set_xlim([self.dTime-10,self.dTime])
-        
-        self.canvas1.show()
-        self.canvas2.show()
-        self.canvas3.show()
-        self.root.after(3000, self.updateGraph(self.regul.pos[0], self.regul.pos[1], self.regul.pos[2]))
+        self.root.after(30, self.updateGraph)
         #print((time.time()-self.curTime))
         
         #Defines method for Home button
@@ -419,9 +422,8 @@ class GUI_Thread(threading.Thread):
         self.gui = GUI(self.root, regul,_cf)
         self.gui.regul.setGUI(self.gui)
         threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-        self.gui.updateGraph(self.gui.regul.pos[0], self.gui.regul.pos[1], self.gui.regul.pos[2])
+       
+        self.gui.updateGraph()
         self.gui.root.mainloop()
     def run(self): 
         print("Closed GUI")
