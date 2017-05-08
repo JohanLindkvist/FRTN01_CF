@@ -98,6 +98,10 @@ class GUI():
         self.Tdz = PD_CF.params[5]
         self.PDz_Td.set(self.Tdz)
         
+        self.PDz_Ti = StringVar()
+        self.Tiz = PD_CF.ZTi
+        self.PDz_Ti.set(self.Tiz)
+        
         self.x_ref = StringVar()
         self.y_ref = StringVar()
         self.z_ref = StringVar()
@@ -161,6 +165,10 @@ class GUI():
         self.z_Td_lbl.grid(row = 3, column = 7)
         self.z_Td_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDz_Td, bd = 10, bg = "powder blue", justify = 'right', width = 5)
         self.z_Td_entry.grid(row = 3, column = 8)
+        self.z_Ti_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "Ti", bd = 10, anchor = 'w')
+        self.z_Ti_lbl.grid(row = 4, column = 7)
+        self.z_Ti_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDz_Ti, bd = 10, bg = "powder blue", justify = 'right', width = 5)
+        self.z_Ti_entry.grid(row = 4, column = 8)
                 
         
         #Plot Parameters
@@ -333,6 +341,8 @@ class GUI():
         self.Tdy = float(self.PDy_Td.get())
         self.Kz = float(self.PDz_K.get())
         self.Tdz = float(self.PDz_Td.get())
+        self.Tiz = float(self.PDz_Ti.get())
+        PD_CF.ZTi = self.Tiz
         PD_CF.params=[self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz]
         PD_CF.updateParams()
                 
