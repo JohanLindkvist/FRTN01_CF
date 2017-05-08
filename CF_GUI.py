@@ -180,6 +180,7 @@ class GUI():
         
         def on_click1(event):
             if event.inaxes is not None:
+                self.a3D.clear()
                 self.ref[0] = event.ydata
                 self.ref_x_entry.insert(0,self.ref[0])
             else:
@@ -210,6 +211,7 @@ class GUI():
         
         def on_click2(event):
             if event.inaxes is not None:
+                self.a3D.clear()
                 self.ref[1] = event.ydata
                 self.ref_y_entry.insert(0,self.ref[1])
             else:
@@ -240,6 +242,7 @@ class GUI():
         #Add plot to window for Z-axis 
         def on_click3(event):
             if event.inaxes is not None:
+                self.a3D.clear()
                 self.ref[2] = event.ydata
                 self.ref_z_entry.insert(0,self.ref[2])
             else:
