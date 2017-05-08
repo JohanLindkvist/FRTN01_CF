@@ -27,6 +27,7 @@ from cflib.crazyflie.syncLogger import SyncLogger
 import logging
 import cflib.crtp  # noqa
 import time
+import matplotlib.patches as mpatches
 
 #Emil tries multiprocessing
 import multiprocessing as mp
@@ -177,17 +178,20 @@ class GUI():
                 print('Clicked ouside axes bounds but inside plot window')
         
         
-        self.f1 = Figure(figsize=(10,3), dpi=50)
+        self.f1 = Figure(figsize=(10,4), dpi=50)
         self.a1 = self.f1.add_subplot(111)
         self.dX=0
         self.line1 , =self.a1.plot(self.dX, self.dTime, 'b-')
         self.line1ref , =self.a1.plot(self.ref[0], self.dTime, 'r-')
+        self.droneposX = mpatches.Patch(color='red', label='CF PosX')
+        self.dronerefX = mpatches.Patch(color='blue', label='CF RefX')
+        self.a1.legend(handles=[self.droneposX, self.dronerefX])
         self.canvas1 = FigureCanvasTkAgg(self.f1, self.XplotFrame)
         self.canvas1.callbacks.connect('button_press_event', on_click1)
         self.canvas1.show()
         self.canvas1.get_tk_widget().pack(side=TOP, expand=True)
-        self.toolbar1 = NavigationToolbar2TkAgg(self.canvas1, self.XplotFrame)
-        self.toolbar1.update()
+        #self.toolbar1 = NavigationToolbar2TkAgg(self.canvas1, self.XplotFrame)
+        #self.toolbar1.update()
         self.canvas1._tkcanvas.pack(side=TOP, expand=True)
         self.f1.subplots_adjust(left=0.05,right=0.95)
         self.a1.set_title('X-values')
@@ -203,17 +207,20 @@ class GUI():
             else:
                 print('Clicked ouside axes bounds but inside plot window')
         
-        self.f2 = Figure(figsize=(10,3), dpi=50)
+        self.f2 = Figure(figsize=(10,4), dpi=50)
         self.a2 = self.f2.add_subplot(111)
         self.dY=0
         self.line2 , =self.a2.plot(self.dY, self.dTime, 'b-')
         self.line2ref , =self.a2.plot(self.ref[1], self.dTime, 'r-')
+        self.droneposY = mpatches.Patch(color='red', label='CF PosY')
+        self.dronerefY = mpatches.Patch(color='blue', label='CF RefY')
+        self.a2.legend(handles=[self.droneposY, self.dronerefY])
         self.canvas2 = FigureCanvasTkAgg(self.f2, self.YplotFrame)
         self.canvas2.callbacks.connect('button_press_event', on_click2)
         self.canvas2.show()
         self.canvas2.get_tk_widget().pack(side=TOP, expand=True)
-        self.toolbar2 = NavigationToolbar2TkAgg(self.canvas2, self.YplotFrame)
-        self.toolbar2.update()
+        #self.toolbar2 = NavigationToolbar2TkAgg(self.canvas2, self.YplotFrame)
+        #self.toolbar2.update()
         self.canvas2._tkcanvas.pack(side=TOP,fill=BOTH, expand=True)
         self.f2.subplots_adjust(left=0.05,right=0.95)
         self.a2.set_title('Y-values')
@@ -231,17 +238,21 @@ class GUI():
                 print('Clicked ouside axes bounds but inside plot window')
         
         
-        self.f3 = Figure(figsize=(10,3), dpi=50)
+        self.f3 = Figure(figsize=(10,4), dpi=50)
         self.a3 = self.f3.add_subplot(111)
         self.dZ=0
         self.line3 , =self.a3.plot(self.dZ, self.dTime, 'b-')
         self.line3ref , =self.a3.plot(self.ref[2], self.dTime, 'r-')
+        self.droneposZ = mpatches.Patch(color='red', label='CF PosZ')
+        self.dronerefZ = mpatches.Patch(color='blue', label='CF RefZ')
+        self.a3.legend(handles=[self.droneposZ, self.dronerefZ])
+        
         self.canvas3 = FigureCanvasTkAgg(self.f3, self.ZplotFrame)
         self.canvas3.callbacks.connect('button_press_event', on_click3)
         self.canvas3.show()
         self.canvas3.get_tk_widget().pack(side=TOP, expand=True)
-        self.toolbar3 = NavigationToolbar2TkAgg(self.canvas3, self.ZplotFrame)
-        self.toolbar3.update()
+        #self.toolbar3 = NavigationToolbar2TkAgg(self.canvas3, self.ZplotFrame)
+        #self.toolbar3.update()
         self.canvas3._tkcanvas.pack(side=TOP, expand=True)
         self.f3.subplots_adjust(left=0.05,right=0.95)
         self.a3.set_title('Z-values')
@@ -253,7 +264,7 @@ class GUI():
         #Add plot to window in 3D
         self.lastTime=time.time()
         
-        self.f3D = Figure(figsize=(12,6), dpi=50)
+        self.f3D = Figure(figsize=(12,7), dpi=50)
         self.a3D = self.f3D.gca(projection='3d')
         self.f3D.subplots_adjust(left=0, bottom=0, right=1, top=1)
     
@@ -270,14 +281,19 @@ class GUI():
         # Add a color bar which maps values to colors.
         #self.f3D.colorbar(self.surf, shrink=0.5, aspect=5)
         
+        self.dronepos = mpatches.Patch(color='red', label='CF Pos')
+        self.droneref = mpatches.Patch(color='blue', label='CF Ref')
+        self.a3D.legend(handles=[self.dronepos, self.droneref])
+        
+       
         self.canvas3D = FigureCanvasTkAgg(self.f3D, self.DplotFrame)
         self.a3D.mouse_init()   
         self.canvas3D.show()
         self.canvas3D.get_tk_widget().pack(side=TOP, expand=True)
-        self.toolbar3D = NavigationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
-        self.toolbar3D.update()
+        #self.toolbar3D = NavigationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
+        #self.toolbar3D.update()
         self.canvas3D._tkcanvas.pack(side=TOP, expand=True)
-        self.a3D.set_title('Fight Path in 3D')
+        self.a3D.set_title('Position in 3D')
         
         
         
@@ -302,7 +318,7 @@ class GUI():
         self.filemenu.add_command(label="Connect", command=self.connectCF)
         self.filemenu.add_command(label="Disconnect", command=self.Disconnect)
         self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=root.destroy)
+        self.filemenu.add_command(label="Exit", command=self.btnQuit)
 
         self.helpmenu = Menu(self.menu)
         self.menu.add_cascade(label="Help", menu=self.helpmenu)
