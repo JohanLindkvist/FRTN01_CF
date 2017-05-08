@@ -350,6 +350,7 @@ class GUI():
     def btnGo(self):
         if(self.regul.IsConnected==True):
             self.regul.Go()
+            self.a3D.clear()
             print ("GO")
             self.ref[0] = float(self.x_ref.get())
             self.ref[1] = float(self.y_ref.get())
@@ -362,8 +363,7 @@ class GUI():
             self.curTime= time.time()
             self.dTime = (self.curTime-self.t0)
             
-            if((self.curTime-1)>self.lastTime): #Updates the 3D-Graph once per second
-                self.a3D.clear()
+            if((self.curTime-0)>=self.lastTime): #Change the '0' to change fewquency of 3D-plot
                 self.a3D.set_zlim(0, self.axLen)
                 self.a3D.set_xlim(0, self.axLen)
                 self.a3D.set_ylim(0, self.axLen)
