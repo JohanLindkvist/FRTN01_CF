@@ -36,12 +36,12 @@ class Regul_CF(threading.Thread):
                 PD_CF.updateState(self.pos)
             else:
                 self._cf.commander.send_setpoint(0,0,0,0)
-            time.sleep(0.005)
+            time.sleep(0.033)
         self._cf.commander.send_setpoint(0, 0, 0, 0)
         # Make sure that the last packet leaves before the link is closed
         # since the message queue is not flushed before closing
         
-        time.sleep(0.01)
+        time.sleep(0.033)
         self._cf.close_link()        
     
     def Go(self):
@@ -49,6 +49,7 @@ class Regul_CF(threading.Thread):
     
     def setParameters(self,params):
         PD_CF.params=params
+        print(PC_CF.params)
     
     def destroy(self):
         self.run=False

@@ -33,8 +33,8 @@ import PD_CF
 logging.basicConfig(level=logging.ERROR)
 # import cflib
 # from cflib.crazyflie import Crazyflie
-
-
+Homepos=[2.3, 0.2, 1.2]
+Startpos= [2.3, 1, 1.5]
 
 
 class GUI():
@@ -95,7 +95,7 @@ class GUI():
         self.x_ref = StringVar()
         self.y_ref = StringVar()
         self.z_ref = StringVar()
-        self.ref = [1.5, 1.5, 1.5]
+        self.ref = Startpos
         self.x_ref.set(self.ref[0])
         self.y_ref.set(self.ref[1])
         self.z_ref.set(self.ref[2])
@@ -140,7 +140,7 @@ class GUI():
         self.y_k_entry.grid(row = 2, column = 6)
         self.y_Td_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "Td", bd = 10, anchor = 'w')
         self.y_Td_lbl.grid(row = 2, column = 7)
-        self.y_Td_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDx_Td, bd = 10, bg = "powder blue", justify = 'right', width = 5)
+        self.y_Td_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDy_Td, bd = 10, bg = "powder blue", justify = 'right', width = 5)
         self.y_Td_entry.grid(row = 2, column = 8)
         #z-axis
         self.z_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "z-axis:", bd = 10, anchor = 'w')
@@ -282,7 +282,7 @@ class GUI():
     #Define method for GO! button
     def btnGo(self):
         self.regul.Go()
-        #print ("GO")
+        print ("GO")
         self.ref[0] = float(self.x_ref.get())
         self.ref[1] = float(self.y_ref.get())
         self.ref[2] = float(self.z_ref.get()) 
@@ -305,14 +305,14 @@ class GUI():
             self.canvas3D.show()
         
         #2D Graphs
-        self.dX = 1.0
+        self.dX = self.regul.pos[0]
         self.line1.set_xdata(np.append(self.line1.get_xdata()[len(self.line1.get_xdata())-self.dataLen:], self.dTime))
         self.line1.set_ydata(np.append(self.line1.get_ydata()[len(self.line1.get_ydata())-self.dataLen:], self.dX))
         self.line1ref.set_xdata(np.append(self.line1ref.get_xdata()[len(self.line1ref.get_xdata())-self.dataLen:], self.dTime))
         self.line1ref.set_ydata(np.append(self.line1ref.get_ydata()[len(self.line1ref.get_ydata())-self.dataLen:], self.ref[0]))
         self.a1.set_xlim([self.dTime-10,self.dTime])
         
-        self.dY = 1.0
+        self.dY = self.regul.pos[1]
         self.line2.set_xdata(np.append(self.line2.get_xdata()[len(self.line2.get_xdata())-self.dataLen:], self.dTime))
         self.line2.set_ydata(np.append(self.line2.get_ydata()[len(self.line2.get_ydata())-self.dataLen:], self.dY))
         self.line2ref.set_xdata(np.append(self.line2ref.get_xdata()[len(self.line2ref.get_xdata())-self.dataLen:], self.dTime))
@@ -321,7 +321,7 @@ class GUI():
        
         
         
-        self.dZ = 1.0
+        self.dZ =self.regul.pos[2]
         self.line3.set_xdata(np.append(self.line3.get_xdata()[len(self.line3.get_xdata())-self.dataLen:], self.dTime))
         self.line3.set_ydata(np.append(self.line3.get_ydata()[len(self.line3.get_ydata())-self.dataLen:], self.dZ))
         self.line3ref.set_xdata(np.append(self.line3ref.get_xdata()[len(self.line3ref.get_xdata())-self.dataLen:], self.dTime))
@@ -334,26 +334,29 @@ class GUI():
         self.canvas3.show()
         
         
-        print((time.time()-self.curTime))
+        #print((time.time()-self.curTime))
         
         
         
     #Defines method for Home button
     def btnHome(self):
-        #print ("Home")
-        self.ref[0] = 0
-        self.ref[1] = 0
-        self.ref[2] = 0
+        print ("Home")
+        self.ref= Homepos
         self.x_ref.set(self.ref[0])
         self.y_ref.set(self.ref[1])
         self.z_ref.set(self.ref[2])
         self.regul.setReference(self.ref)
+        #print(self.regul.getPos())
     
     #Defines method for Land button
     def btnLand(self):
         #TODO implement method
-        self.updateGraph(1.0, 1.0, 1.0)
+        #self.updateGraph(1.0, 1.0, 1.0)
         print ("Land")
+        self.ref= [2.3, 0.2, 0.8]
+        self.z_ref.set(self.ref[2])
+        self.regul.setReference(self.ref)
+        self.btnStop()
     
     #Defines method for Stop button
     def btnStop(self):
@@ -401,7 +404,7 @@ class GUI():
     def connectCF(self):
         cflib.crtp.init_drivers(enable_debug_driver=False)
         
-        self._lg_stab = LogConfig(name='Position', period_in_ms=10)
+        self._lg_stab = LogConfig(name='Position', period_in_ms=100)
         self._lg_stab.add_variable('kalman.stateX', 'float')
         self._lg_stab.add_variable('kalman.stateY', 'float')
         self._lg_stab.add_variable('kalman.stateZ', 'float')
@@ -449,6 +452,7 @@ class GUI():
 
     def _stab_log_data(self, timestamp, data, logconf):
         """Callback froma the log API when data arrives"""
+        #print([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
         self.regul.updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
         self.updateGraph(float(data['kalman.stateX']), float(data['kalman.stateY']), float(data['kalman.stateZ']))
         
