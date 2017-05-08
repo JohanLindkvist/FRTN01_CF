@@ -28,6 +28,11 @@ import logging
 import cflib.crtp  # noqa
 import time
 
+#Emil tries multiprocessing
+import multiprocessing as mp
+
+
+
 import PD_CF
 
 logging.basicConfig(level=logging.ERROR)
@@ -51,7 +56,7 @@ class GUI():
         root.geometry("1000x600+0+0") 
         #Window title
         root.title("CrazyFlie control system")
-                
+        root.resizable(width=False, height=False)       
         #Upper left frame for parameters and reference values
         self.paramFrame = Frame(root, width = 530,height = 340, relief=SUNKEN)
         self.paramFrame.place(x = 460, y = 10, width = 530, height = 250)
@@ -99,6 +104,8 @@ class GUI():
         self.x_ref.set(self.ref[0])
         self.y_ref.set(self.ref[1])
         self.z_ref.set(self.ref[2])
+        self.pos = []
+        self.pos.trace(mode="w", callback=self.updateGraph(self.pos))
         
         #Input fields for pos ref
         self.ref_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "Reference position", bd = 10, anchor = 'w')
@@ -161,12 +168,22 @@ class GUI():
         
         
         #Add plot to window for X-axis 
+        
+        def on_click1(event):
+            if event.inaxes is not None:
+                self.ref[0] = event.ydata
+                self.ref_x_entry.insert(0,self.ref[0])
+            else:
+                print('Clicked ouside axes bounds but inside plot window')
+        
+        
         self.f1 = Figure(figsize=(10,3), dpi=50)
         self.a1 = self.f1.add_subplot(111)
         self.dX=0
         self.line1 , =self.a1.plot(self.dX, self.dTime, 'b-')
         self.line1ref , =self.a1.plot(self.ref[0], self.dTime, 'r-')
         self.canvas1 = FigureCanvasTkAgg(self.f1, self.XplotFrame)
+        self.canvas1.callbacks.connect('button_press_event', on_click1)
         self.canvas1.show()
         self.canvas1.get_tk_widget().pack(side=TOP, expand=True)
         self.toolbar1 = NavigationToolbar2TkAgg(self.canvas1, self.XplotFrame)
@@ -176,13 +193,23 @@ class GUI():
         self.a1.set_title('X-values')
         self.a1.set_ylim([0,3.5])
         
+        
         #Add plot to window for Y-axis 
+        
+        def on_click2(event):
+            if event.inaxes is not None:
+                self.ref[1] = event.ydata
+                self.ref_y_entry.insert(0,self.ref[1])
+            else:
+                print('Clicked ouside axes bounds but inside plot window')
+        
         self.f2 = Figure(figsize=(10,3), dpi=50)
         self.a2 = self.f2.add_subplot(111)
         self.dY=0
         self.line2 , =self.a2.plot(self.dY, self.dTime, 'b-')
         self.line2ref , =self.a2.plot(self.ref[1], self.dTime, 'r-')
         self.canvas2 = FigureCanvasTkAgg(self.f2, self.YplotFrame)
+        self.canvas2.callbacks.connect('button_press_event', on_click2)
         self.canvas2.show()
         self.canvas2.get_tk_widget().pack(side=TOP, expand=True)
         self.toolbar2 = NavigationToolbar2TkAgg(self.canvas2, self.YplotFrame)
@@ -193,13 +220,24 @@ class GUI():
         self.a2.set_ylim([0,3.5])
         
         
+        
+        
         #Add plot to window for Z-axis 
+        def on_click3(event):
+            if event.inaxes is not None:
+                self.ref[2] = event.ydata
+                self.ref_z_entry.insert(0,self.ref[2])
+            else:
+                print('Clicked ouside axes bounds but inside plot window')
+        
+        
         self.f3 = Figure(figsize=(10,3), dpi=50)
         self.a3 = self.f3.add_subplot(111)
         self.dZ=0
         self.line3 , =self.a3.plot(self.dZ, self.dTime, 'b-')
         self.line3ref , =self.a3.plot(self.ref[2], self.dTime, 'r-')
         self.canvas3 = FigureCanvasTkAgg(self.f3, self.ZplotFrame)
+        self.canvas3.callbacks.connect('button_press_event', on_click3)
         self.canvas3.show()
         self.canvas3.get_tk_widget().pack(side=TOP, expand=True)
         self.toolbar3 = NavigationToolbar2TkAgg(self.canvas3, self.ZplotFrame)
@@ -233,9 +271,10 @@ class GUI():
         #self.f3D.colorbar(self.surf, shrink=0.5, aspect=5)
         
         self.canvas3D = FigureCanvasTkAgg(self.f3D, self.DplotFrame)
+        self.a3D.mouse_init()   
         self.canvas3D.show()
         self.canvas3D.get_tk_widget().pack(side=TOP, expand=True)
-        self.toolbar3D = NavigationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
+        self.toolbar3D = NaviPosgationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
         self.toolbar3D.update()
         self.canvas3D._tkcanvas.pack(side=TOP, expand=True)
         self.a3D.set_title('Fight Path in 3D')
@@ -350,13 +389,13 @@ class GUI():
     
     #Defines method for Land button
     def btnLand(self):
-        #TODO implement method
-        #self.updateGraph(1.0, 1.0, 1.0)
         print ("Land")
-        self.ref= [2.3, 0.2, 0.8]
-        self.z_ref.set(self.ref[2])
-        self.regul.setReference(self.ref)
-        self.btnStop()
+        self.regul.Land()
+        self.z_ref.set(0)
+#        self.ref= [2.3, 0.2, 0.8]
+#        self.z_ref.set(self.ref[2])
+#        self.regul.setReference(self.ref)
+#        self.btnStop()
     
     #Defines method for Stop button
     def btnStop(self):
@@ -450,18 +489,23 @@ class GUI():
         """Callback from the log API when an error occurs"""
         print('Error when logging %s: %s' % (logconf.name, msg))
 
+    
+
     def _stab_log_data(self, timestamp, data, logconf):
         """Callback froma the log API when data arrives"""
         #print([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
         self.regul.updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
-        self.updateGraph(float(data['kalman.stateX']), float(data['kalman.stateY']), float(data['kalman.stateZ']))
+        self.pos = [data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']]
+        #self.updateGraph(float(data['kalman.stateX']), float(data['kalman.stateY']), float(data['kalman.stateZ']))
         
 class GUI_Thread(threading.Thread):
     
     def __init__(self, threadID, name, regul,_cf):
-        #Init GUI Thread   
+        #Init GUI Thread
+       
         self.root = Tk()
-        GUI(self.root, regul,_cf)
+        self.gui = GUI(self.root, regul,_cf)
+        
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = name

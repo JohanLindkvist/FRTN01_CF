@@ -22,7 +22,10 @@ class Regul_CF(threading.Thread):
         self.ref=[0,0,0]
         self.pos=[0, 0, 0]
         self._cf=_cf
-        self.go = False        
+        self.go = False
+        self.land = False
+        self.output = []
+        self.landOutput = []
         
     def run(self):
         print("Starting " + self.name)
@@ -31,8 +34,13 @@ class Regul_CF(threading.Thread):
         while(self.run):
             if(self.go):
                 #self.pos = _cf.getPos(TODO)  //Activate when Ankare
-                output = PD_CF.calcOutput(self.pos,self.ref)
-                self._cf.commander.send_setpoint(output[0],output[1],0,output[2])
+                self.output = PD_CF.calcOutput(self.pos,self.ref)
+                self._cf.commander.send_setpoint(self.output[0],self.output[1],0,self.output[2])
+                PD_CF.updateState(self.pos)
+                self.landOutput = self.output
+            elif(self.land):
+                self.landOutput = [self.landOutput[0], self.landOutput[1],  self.landOutput[2]*0.99]
+                self._cf.commander.send_setpoint(self.landOutput[0],self.landOutput[1],0,self.landOutput[2])
                 PD_CF.updateState(self.pos)
             else:
                 self._cf.commander.send_setpoint(0,0,0,0)
@@ -46,7 +54,12 @@ class Regul_CF(threading.Thread):
     
     def Go(self):
         self.go = True
+        self.land = False
     
+    def Land(self):
+        self.go = False
+        self.land = True
+
     def setParameters(self,params):
         PD_CF.params=params
         print(PC_CF.params)
@@ -62,12 +75,9 @@ class Regul_CF(threading.Thread):
 
     def updatePos(self,  newPos):
         self.pos=newPos
-
-    def land(self):
-		#TODO
-        pass
 	
     def stop(self):
         self.go = False
+        self.land = False
 
 
