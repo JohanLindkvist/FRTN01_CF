@@ -165,7 +165,7 @@ class GUI():
         self.z_Td_lbl.grid(row = 3, column = 7)
         self.z_Td_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDz_Td, bd = 10, bg = "powder blue", justify = 'right', width = 5)
         self.z_Td_entry.grid(row = 3, column = 8)
-        self.z_Ti_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "Ti", bd = 10, anchor = 'w')
+        self.z_Ti_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "z-Ti", bd = 10, anchor = 'w')
         self.z_Ti_lbl.grid(row = 4, column = 7)
         self.z_Ti_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDz_Ti, bd = 10, bg = "powder blue", justify = 'right', width = 5)
         self.z_Ti_entry.grid(row = 4, column = 8)
