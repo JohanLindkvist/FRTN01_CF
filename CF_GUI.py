@@ -39,7 +39,7 @@ import PD_CF
 logging.basicConfig(level=logging.ERROR)
 # import cflib
 # from cflib.crazyflie import Crazyflie
-Homepos=[2.3, 0.2, 1.2]
+Homepos=[2.3, 0.2,0.5]
 Startpos= [2.3, 1, 1.5]
 
 
@@ -305,8 +305,8 @@ class GUI():
         self.GO = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "GO", bg="powder blue",command =self.btnGo, width = 7).grid(row=1, column = 2)
         self.Home = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Home", bg="powder blue",command =self.btnHome, width = 7).grid(row=1, column = 3)
         self.Land = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Land", bg="powder blue",command =self.btnLand, width = 7).grid(row=2, column = 2)
-        self.Stop = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Stop", bg="powder blue",command =self.btnStop, width = 7).grid(row=2, column = 3)
-        self.Quit = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Quit", bg="powder blue",command =self.btnQuit, width = 18).grid(row=3, column = 2, columnspan = 2)
+        self.Quit = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Quit", bg="powder blue",command =self.btnQuit, width = 7).grid(row=2, column = 3)
+        self.Stop = Button(self.paramFrame, padx=6,pady=6,bd=6,fg="black", font=('arial', 10,'bold'),text = "Stop", bg="powder blue",command =self.btnStop, width = 18).grid(row=3, column = 2, columnspan = 2)
         self.T = Text(self.paramFrame,  padx = 10,  height = 3,  width = 26,  wrap = 'word')
         self.T.grid(row = 4,  column = 1,  columnspan = 3)
         
@@ -357,7 +357,7 @@ class GUI():
                 self.a3D.set_zlim(0, self.axLen)
                 self.a3D.set_xlim(0, self.axLen)
                 self.a3D.set_ylim(0, self.axLen)
-                self.a3D.plot([self.reguil.pos[0]], [self.reguil.pos[1]], [self.reguil.pos[2]], markerfacecolor='b', markeredgecolor='b', marker='o', markersize=5, alpha=0.6)
+                self.a3D.plot([self.regul.pos[0]], [self.regul.pos[1]], [self.regul.pos[2]], markerfacecolor='b', markeredgecolor='b', marker='o', markersize=5, alpha=0.6)
                 self.a3D.plot([self.ref[0]], [self.ref[1]], [self.ref[2]], markerfacecolor='r', markeredgecolor='r', marker='o', markersize=5, alpha=0.6)
                 self.lastTime = self.curTime
                 self.canvas3D.show()
