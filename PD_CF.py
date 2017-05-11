@@ -27,7 +27,7 @@ bdx = params[0]*adx*N
 bdy = params[2]*ady*N
 bdz = params[4]*adz*N
 errorarray=[0,0,0]
-I = 4
+I = 3
 ZTi=300
    
 # retrieve parameters
