@@ -98,6 +98,10 @@ class GUI():
         self.Tdz = PD_CF.params[5]
         self.PDz_Td.set(self.Tdz)
         
+        self.PDz_Ti = StringVar()
+        self.Tiz = PD_CF.ZTi
+        self.PDz_Ti.set(self.Tiz)
+        
         self.x_ref = StringVar()
         self.y_ref = StringVar()
         self.z_ref = StringVar()
@@ -161,6 +165,10 @@ class GUI():
         self.z_Td_lbl.grid(row = 3, column = 7)
         self.z_Td_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDz_Td, bd = 10, bg = "powder blue", justify = 'right', width = 5)
         self.z_Td_entry.grid(row = 3, column = 8)
+        self.z_Ti_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "Ti", bd = 10, anchor = 'w')
+        self.z_Ti_lbl.grid(row = 4, column = 7)
+        self.z_Ti_entry = Entry(self.paramFrame, font=('arial', 10, 'bold'), textvariable = self.PDz_Ti, bd = 10, bg = "powder blue", justify = 'right', width = 5)
+        self.z_Ti_entry.grid(row = 4, column = 8)
                 
         
         #Plot Parameters
@@ -172,6 +180,7 @@ class GUI():
         
         def on_click1(event):
             if event.inaxes is not None:
+                self.a3D.clear()
                 self.ref[0] = event.ydata
                 self.ref_x_entry.insert(0,self.ref[0])
             else:
@@ -202,6 +211,7 @@ class GUI():
         
         def on_click2(event):
             if event.inaxes is not None:
+                self.a3D.clear()
                 self.ref[1] = event.ydata
                 self.ref_y_entry.insert(0,self.ref[1])
             else:
@@ -232,6 +242,7 @@ class GUI():
         #Add plot to window for Z-axis 
         def on_click3(event):
             if event.inaxes is not None:
+                self.a3D.clear()
                 self.ref[2] = event.ydata
                 self.ref_z_entry.insert(0,self.ref[2])
             else:
@@ -333,6 +344,8 @@ class GUI():
         self.Tdy = float(self.PDy_Td.get())
         self.Kz = float(self.PDz_K.get())
         self.Tdz = float(self.PDz_Td.get())
+        self.Tiz = float(self.PDz_Ti.get())
+        PD_CF.ZTi = self.Tiz
         PD_CF.params=[self.Kx,self.Tdx,self.Ky,self.Tdy, self.Kz, self.Tdz]
         PD_CF.updateParams()
                 
@@ -340,6 +353,7 @@ class GUI():
     def btnGo(self):
         if(self.regul.IsConnected==True):
             self.regul.Go()
+            self.a3D.clear()
             print ("GO")
             self.ref[0] = float(self.x_ref.get())
             self.ref[1] = float(self.y_ref.get())
@@ -352,8 +366,7 @@ class GUI():
             self.curTime= time.time()
             self.dTime = (self.curTime-self.t0)
             
-            if((self.curTime-1)>self.lastTime): #Updates the 3D-Graph once per second
-                self.a3D.clear()
+            if((self.curTime-0)>=self.lastTime): #Change the '0' to change fewquency of 3D-plot
                 self.a3D.set_zlim(0, self.axLen)
                 self.a3D.set_xlim(0, self.axLen)
                 self.a3D.set_ylim(0, self.axLen)
