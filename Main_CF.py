@@ -1,4 +1,15 @@
-"main class to call other classes"
+"""
+Created on Mon Apr  3 11:13:54 2017
+
+@authors:
+  
+Nils Espfors
+Johan Lindqvist
+Michael Gabassi
+Emil Wåreus
+
+"""
+
 from Regul_CF import Regul_CF
 from Monitor_CF import Monitor
 import CF_GUI 

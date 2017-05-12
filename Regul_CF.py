@@ -1,4 +1,15 @@
-"template for controller"
+"""
+Created on Mon Apr  3 11:13:54 2017
+
+@authors:
+  
+Nils Espfors
+Johan Lindqvist
+Michael Gabassi
+Emil Wåreus
+
+"""
+
 import time
 import threading
 import PD_CF
@@ -38,10 +49,9 @@ class Regul_CF(threading.Thread):
         self.run=True
         
         while(self.run):
-            #curTime= time.time()
-            #dTime = (curTime-self.t0)
+           
             if(self.go):
-                #self.pos = _cf.getPos(TODO)  //Activate when Ankare
+               
                 self.output = PD_CF.calcOutput(self.pos,self.ref)
                 self._cf.commander.send_setpoint(self.output[0],self.output[1],0,self.output[2])
                 PD_CF.updateState(self.pos)
@@ -53,7 +63,7 @@ class Regul_CF(threading.Thread):
             else:
                 self._cf.commander.send_setpoint(0,0,0,0)
             time.sleep(0.033)
-            #print((time.time()-curTime))
+           
         self._cf.commander.send_setpoint(0, 0, 0, 0)
         # Make sure that the last packet leaves before the link is closed
         # since the message queue is not flushed before closing
@@ -164,10 +174,7 @@ class Regul_CF(threading.Thread):
         self.GUI.T.delete('1.0',  END)
         temp = 'Connected to Crazyflie'
         self.GUI.T.insert(END,  temp)
-        #print ('connected to crazyflie')
-        #self._cf.param.set_value('kalman.resetEstimation', '1')
-        #time.sleep(0.1)
-        #self._cf.param.set_value('kalman.resetEstimation', '0')
+       
         try:
             self._cf.log.add_config(self._lg_stab)
             
@@ -189,10 +196,9 @@ class Regul_CF(threading.Thread):
 
     def _stab_log_data(self, timestamp, data, logconf):
         """Callback froma the log API when data arrives"""
-        #print([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
-        #updatePos([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']])
+        #print([data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']]) #Uncomment this line to print the pos      
         self.pos = [data['kalman.stateX'], data['kalman.stateY'], data['kalman.stateZ']]
-        #self.updateGraph(float(data['kalman.stateX']), float(data['kalman.stateY']), float(data['kalman.stateZ']))
+        
       
     def setGUI(self,  GUI):
         print("Init Regul GUI")

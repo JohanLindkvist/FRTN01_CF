@@ -1,4 +1,20 @@
-"Template for monitor-class"
+
+"""
+Created on Mon Apr  3 11:13:54 2017
+
+@authors:
+  
+Nils Espfors
+Johan Lindqvist
+Michael Gabassi
+Emil Wåreus
+
+"""
+
+
+# This class is not currently used. The skeleton could be used to implement 
+# a reference-generator. 
+
 import threading
 import time
 
@@ -22,17 +38,4 @@ class Monitor(threading.Thread):
         
     def destroy(self):
         self.run=False
-        
-    '''    
-
-    def Plot2D(self):
-        #Todo
-    def Plot3D(self):
-        #Todo
-    def GetPos(self):
-        #Todo
-    def SetPos(self):
-        #Todo
-    def SetRef(self):
-    '''
         

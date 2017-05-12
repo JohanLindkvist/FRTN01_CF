@@ -2,16 +2,21 @@
 """
 Created on Mon Apr  3 11:13:54 2017
 
-@author: Johan
+@authors:
+  
+Nils Espfors
+Johan Lindqvist
+Michael Gabassi
+Emil Wåreus
+
 """
 
 from Tkinter import*
 import tkMessageBox
 import matplotlib
 matplotlib.use("TkAgg")
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+#from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
-
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -29,16 +34,11 @@ import cflib.crtp  # noqa
 import time
 import matplotlib.patches as mpatches
 
-#Emil tries multiprocessing
-import multiprocessing as mp
-
-
-
 import PD_CF
 
 logging.basicConfig(level=logging.ERROR)
-# import cflib
-# from cflib.crazyflie import Crazyflie
+
+
 Homepos=[2.3, 0.2,0.5]
 Startpos= [2.3, 1, 1.5]
 
@@ -54,13 +54,13 @@ class GUI():
         
         
         #Size of window
-        root.geometry("1000x600+0+0") 
+        root.geometry("1010x600+0+0") 
         #Window title
         root.title("CrazyFlie control system")
         root.resizable(width=False, height=False)       
         #Upper left frame for parameters and reference values
-        self.paramFrame = Frame(root, width = 530,height = 340, relief=SUNKEN)
-        self.paramFrame.place(x = 460, y = 10, width = 530, height = 250)
+        self.paramFrame = Frame(root, width = 540,height = 340, relief=SUNKEN)
+        self.paramFrame.place(x = 460, y = 10, width = 540, height = 250)
         
         
         #Lower left frame for x, y and z-plots
@@ -110,7 +110,7 @@ class GUI():
         self.y_ref.set(self.ref[1])
         self.z_ref.set(self.ref[2])
         self.pos = []
-        #self.pos.trace(mode="w", callback=self.updateGraph(self.pos))
+        
         
         #Input fields for pos ref
         self.ref_lbl = Label(self.paramFrame, font=('arial', 10, 'bold'), text = "Reference position", bd = 10, anchor = 'w')
@@ -178,6 +178,7 @@ class GUI():
         
         #Add plot to window for X-axis 
         
+        #This Method makes the plots "clickable"
         def on_click1(event):
             if event.inaxes is not None:
                 self.a3D.clear()
@@ -199,8 +200,6 @@ class GUI():
         self.canvas1.callbacks.connect('button_press_event', on_click1)
         self.canvas1.show()
         self.canvas1.get_tk_widget().pack(side=TOP, expand=True)
-        #self.toolbar1 = NavigationToolbar2TkAgg(self.canvas1, self.XplotFrame)
-        #self.toolbar1.update()
         self.canvas1._tkcanvas.pack(side=TOP, expand=True)
         self.f1.subplots_adjust(left=0.05,right=0.95)
         self.a1.set_title('X-values')
@@ -209,6 +208,7 @@ class GUI():
         
         #Add plot to window for Y-axis 
         
+        #This Method makes the plots "clickable"
         def on_click2(event):
             if event.inaxes is not None:
                 self.a3D.clear()
@@ -229,8 +229,6 @@ class GUI():
         self.canvas2.callbacks.connect('button_press_event', on_click2)
         self.canvas2.show()
         self.canvas2.get_tk_widget().pack(side=TOP, expand=True)
-        #self.toolbar2 = NavigationToolbar2TkAgg(self.canvas2, self.YplotFrame)
-        #self.toolbar2.update()
         self.canvas2._tkcanvas.pack(side=TOP,fill=BOTH, expand=True)
         self.f2.subplots_adjust(left=0.05,right=0.95)
         self.a2.set_title('Y-values')
@@ -240,6 +238,7 @@ class GUI():
         
         
         #Add plot to window for Z-axis 
+        #This Method makes the plots "clickable"
         def on_click3(event):
             if event.inaxes is not None:
                 self.a3D.clear()
@@ -262,8 +261,6 @@ class GUI():
         self.canvas3.callbacks.connect('button_press_event', on_click3)
         self.canvas3.show()
         self.canvas3.get_tk_widget().pack(side=TOP, expand=True)
-        #self.toolbar3 = NavigationToolbar2TkAgg(self.canvas3, self.ZplotFrame)
-        #self.toolbar3.update()
         self.canvas3._tkcanvas.pack(side=TOP, expand=True)
         self.f3.subplots_adjust(left=0.05,right=0.95)
         self.a3.set_title('Z-values')
@@ -284,25 +281,14 @@ class GUI():
         self.a3D.set_zlim(0, self.axLen)
         self.a3D.set_xlim(0, self.axLen)
         self.a3D.set_ylim(0, self.axLen)
-        self.a3D.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-        
-        
-        #self.a3D.plot([1.], [1.], [1.], markerfacecolor='k', markeredgecolor='k', marker='o', markersize=5, alpha=0.6)
-
-        # Add a color bar which maps values to colors.
-        #self.f3D.colorbar(self.surf, shrink=0.5, aspect=5)
-        
+        self.a3D.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))      
         self.dronepos = mpatches.Patch(color='red', label='CF Pos')
         self.droneref = mpatches.Patch(color='blue', label='CF Ref')
-        self.a3D.legend(handles=[self.dronepos, self.droneref])
-        
-       
+        self.a3D.legend(handles=[self.dronepos, self.droneref]) 
         self.canvas3D = FigureCanvasTkAgg(self.f3D, self.DplotFrame)
         self.a3D.mouse_init()   
         self.canvas3D.show()
         self.canvas3D.get_tk_widget().pack(side=TOP, expand=True)
-        #self.toolbar3D = NavigationToolbar2TkAgg(self.canvas3D, self.DplotFrame)
-        #self.toolbar3D.update()
         self.canvas3D._tkcanvas.pack(side=TOP, expand=True)
         self.a3D.set_title('Position in 3D')
         
@@ -336,7 +322,7 @@ class GUI():
         self.helpmenu.add_command(label="About...", command=self.About)
         self.x=1.0
 
-     #Define method for apply button (Not real method)
+    #Define method for apply button (Not real method)
     def btnApply(self):
         self.Kx = float(self.PDx_K.get())
         self.Tdx = float(self.PDx_Td.get())
@@ -402,9 +388,9 @@ class GUI():
             self.canvas3.show()
         
         self.root.after(30, self.updateGraph)
-        #print((time.time()-self.curTime))
         
-        #Defines method for Home button
+        
+    #Defines method for Home button
     def btnHome(self):
         if(self.regul.IsConnected==True):
             print ("Home")
@@ -413,7 +399,7 @@ class GUI():
             self.y_ref.set(self.ref[1])
             self.z_ref.set(self.ref[2])
             self.regul.setReference(self.ref)
-            #print(self.regul.getPos())
+            
     
     #Defines method for Land button
     def btnLand(self):
@@ -421,10 +407,7 @@ class GUI():
             print ("Land")
             self.regul.Land()
             self.z_ref.set(0)
-#        self.ref= [2.3, 0.2, 0.8]
-#        self.z_ref.set(self.ref[2])
-#        self.regul.setReference(self.ref)
-#        self.btnStop()
+#       
     
     #Defines method for Stop button
     def btnStop(self):
@@ -435,7 +418,7 @@ class GUI():
     def btnQuit(self):
         self.regul.destroy()
         self.root.destroy()
-    #Drop down menu
+   
     
     def connectCF(self):
         if(self.regul.IsConnected==False):
@@ -450,16 +433,13 @@ class GUI():
         self.messageBox.showinfo("About", "CrazyFlie dude!")
     
 
-class GUI_Thread(threading.Thread):
+class GUI_Thread():
     
-    def __init__(self, threadID, name, regul,_cf):
-        #Init GUI Thread
-       
+    def __init__(self, regul,_cf):
+        #Init GUI Thread 
         self.root = Tk()
         self.gui = GUI(self.root, regul,_cf)
         self.gui.regul.setGUI(self.gui)
-        threading.Thread.__init__(self)
-       
         self.gui.updateGraph()
         self.gui.root.mainloop()
     def run(self): 

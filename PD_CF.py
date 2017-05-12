@@ -1,14 +1,19 @@
 """
 Created on Wed Apr 5 11:13:54 2017
 
-@author: Nils
+@author:
+    
+Nils Espfors
+Johan Lindqvist
+Michael Gabassi
+Emil Wåreus
+
 """
 
 
 #Init method
 
 x = 'PD'
-#K_x,K_xTd,K_y,K_yTd,K_z,K_zTd
 params = [11,1.1,11, 1.1,10000, 1.4]
 oldX=0
 oldY=0
@@ -30,9 +35,7 @@ errorarray=[0,0,0]
 I = 3
 ZTi=300
    
-# retrieve parameters
-#def getParam():
-#    return params
+
 
 #calculate controlsignal, Bumpless transition
 def calcOutput(pos, ref):
@@ -47,32 +50,23 @@ def calcOutput(pos, ref):
     outputRoll = params[2]*(Beta*errorarray[1])+Dy
     outputThrust = params[4]*(Beta*errorarray[2]+I)+ Dz
     if outputThrust > (65001):
-        print ('Thrust to High: ',  outputThrust)
         outputThrust = 65000
     elif (outputThrust < 35000):
-         print ('Thrust to low: ',  outputThrust)
-         outputThrust = 35001
+        outputThrust = 35001
     if outputPitch > (11):
-        print ('Pitch to High: ',  outputPitch)
         outputPitch = 10
     elif (outputPitch < -11):
-        print ("Pitch to low: ",  outputPitch)
         outputPitch = -10
     if outputRoll > (11):
-        print ("Roll to High: ",  outputRoll)
         outputRoll = 10
     elif outputRoll < -11:
-        print ("Roll to low: ",  outputRoll)
         outputRoll = -10
-    #print (-outputRoll,  outputPitch,  outputThrust)
-    #print(pos)
     return -outputRoll,outputPitch,outputThrust
 
 #update state after calculating (maybe not neccesary??)
 def updateState(pos):
     global oldX,  oldY,  oldZ, I, errorarray, ZTi
     I = I + errorarray[2]/ZTi
-    #print(I)
     if (I > 70000/params[4]):
         print("Antiwindup activated!")
         I =  70000/params[4]
